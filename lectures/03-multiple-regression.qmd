@@ -231,7 +231,7 @@ llm = pd.DataFrame({
     "model": model, "rag_docs": rag_docs, "input_tokens": input_tokens,
     "output_tokens": output_tokens, "hour": hour,
 })
-sec_tok = llm.model.map(sec_per_token)
+sec_tok = llm.model.map(sec_per_token).astype(float)
 llm["latency"] = np.round(0.8 + 0.25 * llm.input_tokens / 1000 +
                            sec_tok * llm.output_tokens + rng.normal(0, 1, n_calls), 2)
 llm["input_k"] = llm.input_tokens / 1000
