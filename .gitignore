@@ -9,3 +9,4 @@
 ~$*
 # Never commit exams, solutions or student data (see README "What is not in this repo")
 /_private/
+.claude/

@@ -19,8 +19,8 @@ dir: rtl
 
 website:
   title: "ניתוח נתונים סטטיסטי"
-  site-url: https://adisarid.github.io/nanas-tau/
-  repo-url: https://github.com/adisarid/nanas-tau
+  site-url: https://OJS-9.github.io/nanas-tau-python/
+  repo-url: https://github.com/OJS-9/nanas-tau-python
   repo-actions: [source, issue]
   page-navigation: true
   navbar:
@@ -46,10 +46,11 @@ website:
         target: _blank
     right:
       - icon: github
-        href: https://github.com/adisarid/nanas-tau
+        href: https://github.com/OJS-9/nanas-tau-python
         aria-label: GitHub
   page-footer:
     center: "ד״ר עדי שריד · הפקולטה להנדסה, אוניברסיטת תל אביב · תשפ״ז"
+    left: "גרסת Python לא רשמית של אתר הקורס של ד״ר עדי שריד · [האתר המקורי](https://adisarid.github.io/nanas-tau/)"
     right: "עודכן לאחרונה: 19.10.2026"   # update on every push to main (see README)
 
 format:

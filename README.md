@@ -1,8 +1,10 @@
 # ננס · ניתוח נתונים סטטיסטי (Statistical Data Analysis)
 
+Unofficial Python port of [adisarid/nanas-tau](https://github.com/adisarid/nanas-tau) by Dr. Adi Sarid. Original content licensed CC BY-SA 4.0; code examples rewritten in Python.
+
 Course materials for **TAU 0571-3137, Statistical Data Analysis**, Faculty of Engineering (Industrial Engineering), Tel Aviv University, semester A 2026/27 (תשפ״ז).
 
-- **Site:** <https://adisarid.github.io/nanas-tau/>
+- **Site:** <https://OJS-9.github.io/nanas-tau-python/>
 - **Lecturer:** Dr. Adi Sarid. Lectures Mon 09:00–12:00, Shmuel Engineering building, room 001.
 - **TA:** Avital Shamir. Recitations Wed 14:30–15:30 (group 02) and 15:30–16:30 (group 03).
 - **Official syllabus:** [TAU syllabus system](https://www.ims.tau.ac.il/Tal/Syllabus/Syllabus_L.aspx?course=0571313701&year=2026)
