@@ -8,12 +8,18 @@ format:
     output-file: 01-nonparametric-slides.html
 ---
 
-```{r}
+```{python}
 #| label: setup
 #| include: false
-source("../R/setup.R")
-library(knitr)
-data_dir <- "../data/nonparametric"
+import sys
+sys.path.insert(0, "..")
+from py.setup import nanas_pal, apply_nanas_theme
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+from palmerpenguins import load_penguins
+data_dir = "../data/nonparametric"
 ```
 
 ## על מה נדבר היום
@@ -35,23 +41,25 @@ data_dir <- "../data/nonparametric"
 - **השאלה:** האם יש הבדל במשקל הממוצע בין זכרים לנקבות?
 - הנתונים מגיעים עם R (מגרסה 4.5), בלי חבילה נוספת
 
-```{r}
+```{python}
 #| label: penguins-data
-gentoo <- penguins |> filter(species == "Gentoo", !is.na(sex))
-gentoo |> summarise(n = n(), mean = mean(body_mass), sd = sd(body_mass), .by = sex)
+penguins = load_penguins().rename(columns={"body_mass_g": "body_mass"})
+gentoo = penguins[(penguins.species == "Gentoo") & penguins.sex.notna()].copy()
+gentoo.groupby("sex")["body_mass"].agg(n="count", mean="mean", sd="std")
 ```
 
 ## התפלגות המשקל
 
-```{r}
+```{python}
 #| label: penguins-hist
 #| output-location: slide
 #| fig-height: 4
-ggplot(gentoo, aes(body_mass)) +
-  geom_histogram(binwidth = 100, fill = nanas_pal[["grey"]]) +
-  labs(title = "משקל הגוף של פינגווינים מסוג Gentoo",
-       subtitle = "119 פרטים, זכרים ונקבות יחד",
-       x = "Body mass (g)", y = "Count")
+fig, ax = plt.subplots(figsize=(8, 4))
+bins = np.arange(gentoo.body_mass.min() // 100 * 100, gentoo.body_mass.max() + 200, 100)
+ax.hist(gentoo.body_mass, bins=bins, color=nanas_pal["grey"])
+ax.set_title("משקל הגוף של פינגווינים מסוג Gentoo\n119 פרטים, זכרים ונקבות יחד", loc="right")
+ax.set_xlabel("Body mass (g)"); ax.set_ylabel("Count")
+plt.show()
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -60,21 +68,23 @@ ggplot(gentoo, aes(body_mass)) +
 
 ## המשקל לפי מין
 
-```{r}
+```{python}
 #| label: penguins-hist-sex
 #| output-location: slide
 #| fig-height: 4
-sex_means <- gentoo |> summarise(mean = mean(body_mass), .by = sex)
+sex_colors = {"female": nanas_pal["accent"], "male": nanas_pal["primary"]}
+sex_means = gentoo.groupby("sex")["body_mass"].mean()
 
-ggplot(gentoo, aes(body_mass, fill = sex)) +
-  geom_histogram(binwidth = 100, alpha = 0.6, position = "identity") +
-  geom_vline(aes(xintercept = mean, colour = sex), data = sex_means,
-             linetype = "dashed", linewidth = 0.9, show.legend = FALSE) +
-  scale_fill_manual(values = c(female = nanas_pal[["accent"]], male = nanas_pal[["primary"]])) +
-  scale_colour_manual(values = c(female = nanas_pal[["accent"]], male = nanas_pal[["primary"]])) +
-  labs(title = "הזכרים כבדים בכ-800 גרם בממוצע",
-       subtitle = "הקווים המקווקווים: הממוצע בכל קבוצה",
-       x = "Body mass (g)", y = "Count", fill = NULL)
+fig, ax = plt.subplots(figsize=(8, 4))
+bins = np.arange(gentoo.body_mass.min() // 100 * 100, gentoo.body_mass.max() + 200, 100)
+for sex, color in sex_colors.items():
+    vals = gentoo.loc[gentoo.sex == sex, "body_mass"]
+    ax.hist(vals, bins=bins, alpha=0.6, color=color, label=sex)
+    ax.axvline(sex_means[sex], color=color, linestyle="--", linewidth=0.9)
+ax.set_title("הזכרים כבדים בכ-800 גרם בממוצע\nהקווים המקווקווים: הממוצע בכל קבוצה", loc="right")
+ax.set_xlabel("Body mass (g)"); ax.set_ylabel("Count")
+ax.legend()
+plt.show()
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -93,10 +103,15 @@ t = \frac{\bar{x}_F - \bar{x}_M}{\sqrt{\dfrac{s_F^2}{n_F} + \dfrac{s_M^2}{n_M}}}
 = \frac{-805.1}{54.5} \approx -14.76
 $$
 
-```{r}
+```{python}
 #| label: penguins-ttest
-t.test(body_mass ~ sex, data = gentoo) |>
-  print(digits = 6)  # a little more precision than the course default
+female = gentoo.loc[gentoo.sex == "female", "body_mass"]
+male = gentoo.loc[gentoo.sex == "male", "body_mass"]
+res = stats.ttest_ind(female, male, equal_var=False)  # Welch's t-test, like R's default
+ci = res.confidence_interval(confidence_level=0.95)
+print(f"t = {res.statistic:.6g}, df = {res.df:.6g}, p-value = {res.pvalue:.6g}")
+print(f"95% CI for mean(female) - mean(male): [{ci.low:.6g}, {ci.high:.6g}]")
+print(f"mean female = {female.mean():.6g}, mean male = {male.mean():.6g}")
 ```
 
 ## איך קוראים את הפלט
@@ -149,30 +164,27 @@ $$
 
 ## סימולציה: ממוצע מול חציון
 
-```{r}
+```{python}
 #| label: running-mean-median
 #| output-location: slide
 # F(x) = 1 - 1/(1+x)  =>  x = 1/(1-u) - 1
-n <- 20000
-heavy <- tibble(
-  i = 1:n,
-  x = 1 / (1 - runif(n)) - 1
-) |>
-  mutate(
-    `ממוצע מצטבר` = cummean(x),
-    `חציון מצטבר` = map_dbl(i, \(k) median(x[seq_len(k)]))
-  ) |>
-  filter(i %% 20 == 0) |>
-  pivot_longer(c(`ממוצע מצטבר`, `חציון מצטבר`), names_to = "stat")
+n = 20000
+u = np.random.default_rng(2026).uniform(size=n)
+x = 1 / (1 - u) - 1
+i = np.arange(1, n + 1)
+running_mean = np.cumsum(x) / i
+running_median = pd.Series(x).expanding().median().to_numpy()
+keep = (i % 20 == 0)
 
-ggplot(heavy, aes(i, value, colour = stat)) +
-  geom_hline(yintercept = 1, linetype = "dashed", colour = "grey50") +
-  geom_line(linewidth = 0.8) +
-  scale_x_log10(labels = label_comma()) +
-  scale_colour_manual(values = c(nanas_pal[["accent"]], nanas_pal[["primary"]])) +
-  labs(title = "החציון מתכנס ל-1, הממוצע ממשיך לטפס",
-       subtitle = "דגימות מהתפלגות שבה התוחלת אינסופית",
-       x = "Sample size (log scale)", y = NULL, colour = NULL)
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.axhline(1, linestyle="--", color="grey")
+ax.plot(i[keep], running_mean[keep], color=nanas_pal["accent"], label="ממוצע מצטבר")
+ax.plot(i[keep], running_median[keep], color=nanas_pal["primary"], label="חציון מצטבר")
+ax.set_xscale("log")
+ax.set_title("החציון מתכנס ל-1, הממוצע ממשיך לטפס\nדגימות מהתפלגות שבה התוחלת אינסופית", loc="right")
+ax.set_xlabel("Sample size (log scale)")
+ax.legend()
+plt.show()
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -181,45 +193,43 @@ ggplot(heavy, aes(i, value, colour = stat)) +
 
 ## כשהנתונים סדורים: שאלת סקר בסולם ליקרט {.smaller}
 
-```{r}
+```{python}
 #| label: likert-data
 #| include: false
-likert_levels <- c("כלל לא", "במידה מועטה", "במידה בינונית",
-                   "במידה רבה", "במידה רבה מאוד")
+likert_levels = ["כלל לא", "במידה מועטה", "במידה בינונית",
+                  "במידה רבה", "במידה רבה מאוד"]
 # Fixed counts (no RNG draw), so later simulated examples keep their numbers
-likert <- tibble(
-  answer = factor(rep(likert_levels, times = c(36, 25, 12, 30, 47)),
-                  levels = likert_levels)
-)
-likert_mean   <- mean(as.integer(likert$answer))
-likert_median <- likert_levels[median(as.integer(likert$answer))]
+counts5 = [36, 25, 12, 30, 47]
+likert_codes = np.repeat(np.arange(1, 6), counts5)
+likert = pd.DataFrame({"answer": pd.Categorical.from_codes(likert_codes - 1, categories=likert_levels, ordered=True)})
+likert_mean = likert_codes.mean()
+likert_median = likert_levels[int(np.median(likert_codes)) - 1]
 ```
 
 "באיזו מידה את/ה אוהב/ת סטטיסטיקה?" (150 משיבים)
 
 :::: {.columns}
 ::: {.column width="55%"}
-```{r}
+```{python}
 #| label: likert-plot
 #| echo: false
 #| fig-height: 4.5
-likert |>
-  count(answer) |>
-  ggplot(aes(answer, n)) +
-  geom_col() +
-  geom_vline(xintercept = likert_mean, linetype = "dashed",
-             colour = nanas_pal[["accent"]], linewidth = 1) +
-  annotate("label", x = likert_mean, y = Inf, vjust = 1.3,
-           label = paste0("ממוצע = ", round(likert_mean, 1)),
-           colour = nanas_pal[["accent"]]) +
-  labs(title = "התשובות נוטות לקצוות", x = NULL, y = "Count")
+fig, ax = plt.subplots(figsize=(8, 4.5))
+counts_s = likert["answer"].value_counts().reindex(likert_levels)
+ax.bar(likert_levels, counts_s.values, color=nanas_pal["primary"])
+ax.axvline(likert_mean - 1, linestyle="--", color=nanas_pal["accent"], linewidth=1)
+ax.text(likert_mean - 1, counts_s.max(), f"ממוצע = {likert_mean:.1f}",
+        color=nanas_pal["accent"], ha="center", va="top")
+ax.set_title("התשובות נוטות לקצוות", loc="right")
+ax.set_ylabel("Count")
+plt.show()
 ```
 :::
 
 ::: {.column width="45%"}
 - הסולם **סדור** ([ordinal]{.en}): הסדר ידוע, המרחקים בין התשובות לא
 - קידוד 1–5 וחישוב ממוצע מניחים שכל הפערים שווים
-- הממוצע (`r round(likert_mean, 1)`) נופל ליד "במידה בינונית", התשובה שהכי מעט אנשים בחרו
+- הממוצע (`{python} round(likert_mean, 1)`) נופל ליד "במידה בינונית", התשובה שהכי מעט אנשים בחרו
 - ההתפלגות בדידה, חסומה ורחוקה מנורמלית. מבחנים על החציון ועל דירוגים מתאימים כאן יותר
 :::
 ::::
@@ -227,14 +237,23 @@ likert |>
 ::: {.content-hidden when-format="revealjs"}
 סולם ליקרט ([Likert scale]{.en}) הוא אחד הכלים הנפוצים ביותר בסקרים, ובנתונים כאלה קל ליפול לחישוב ממוצע. המספרים 1 עד 5 הם רק **תוויות** שמשמרות סדר. אין סיבה להניח שהמרחק בין "כלל לא" ל"במידה מועטה" שווה למרחק בין "במידה רבה" ל"במידה רבה מאוד". אם נחליף את הקידוד בכל קידוד אחר ששומר על הסדר (למשל 1, 2, 3, 4, 10), הממוצע ישתנה, ועמו המסקנות של מבחן t. החציון והדירוגים לא ישתנו כלל, ולכן גם המבחנים שמבוססים עליהם.
 
-כאן החציון הוא "`r likert_median`", ובנוסף כדאי פשוט לדווח על ההתפלגות כולה, למשל אחוז המשיבים שענו "במידה רבה" או "במידה רבה מאוד". הממוצע מסתיר את מה שהגרף מראה בבירור: הקבוצה מקוטבת, ומעט מאוד משיבים נמצאים באמצע.
+כאן החציון הוא "`{python} likert_median`", ובנוסף כדאי פשוט לדווח על ההתפלגות כולה, למשל אחוז המשיבים שענו "במידה רבה" או "במידה רבה מאוד". הממוצע מסתיר את מה שהגרף מראה בבירור: הקבוצה מקוטבת, ומעט מאוד משיבים נמצאים באמצע.
 
 כדאי לדעת שבפועל רבים מריצים מבחני t על נתוני ליקרט, ובמדגמים גדולים זה לרוב לא מטעה מאוד. אבל זו הנחה שצריך להצדיק, לא ברירת מחדל.
 
-```{r}
+```{python}
 #| label: likert-plot-code
-#| ref.label: likert-plot
 #| eval: false
+# (same code as the `likert-plot` chunk above)
+fig, ax = plt.subplots(figsize=(8, 4.5))
+counts_s = likert["answer"].value_counts().reindex(likert_levels)
+ax.bar(likert_levels, counts_s.values, color=nanas_pal["primary"])
+ax.axvline(likert_mean - 1, linestyle="--", color=nanas_pal["accent"], linewidth=1)
+ax.text(likert_mean - 1, counts_s.max(), f"ממוצע = {likert_mean:.1f}",
+        color=nanas_pal["accent"], ha="center", va="top")
+ax.set_title("התשובות נוטות לקצוות", loc="right")
+ax.set_ylabel("Count")
+plt.show()
 ```
 :::
 
@@ -281,13 +300,15 @@ $$
 
 **כלל ההכרעה:** אם $r_0 \le R^*_\alpha$, דוחים את $H_0$.
 
-```{r}
+```{python}
 #| label: sign-critical
 # Critical value of the sign test: largest r with 2 * P(Bin(n, 0.5) <= r) <= alpha
-sign_critical <- function(n, alpha) {
-  max(which(2 * pbinom(0:n, n, 0.5) <= alpha)) - 1
-}
-sapply(c(`0.01` = 0.01, `0.05` = 0.05, `0.10` = 0.10), \(a) sign_critical(20, a))
+def sign_critical(n, alpha):
+    r = np.arange(0, n + 1)
+    ok = 2 * stats.binom.cdf(r, n, 0.5) <= alpha
+    return int(r[ok].max())
+
+{f"{a:.2f}": sign_critical(20, a) for a in (0.01, 0.05, 0.10)}
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -298,24 +319,32 @@ sapply(c(`0.01` = 0.01, `0.05` = 0.05, `0.10` = 0.10), \(a) sign_critical(20, a)
 
 ה-SLA של שירות קובע שהחציון של זמן התגובה הוא **200 ms**. נדגמו 20 בקשות:
 
-```{r}
+```{python}
 #| label: api-data
-api <- read_csv(file.path(data_dir, "api_latency.csv"), show_col_types = FALSE)
-api |> mutate(diff = latency_ms - 200, sign = if_else(diff > 0, "+", "-")) |>
-  count(sign)
+api = pd.read_csv(f"{data_dir}/api_latency.csv")
+api["diff"] = api.latency_ms - 200
+api["sign"] = np.where(api["diff"] > 0, "+", "-")
+api.groupby("sign").size().rename("n")
 ```
 
-```{r}
+```{python}
 #| label: api-plot
 #| output-location: slide
 #| fig-height: 3
-ggplot(api, aes(latency_ms, 0, colour = latency_ms > 200)) +
-  geom_vline(xintercept = 200, linetype = "dashed", colour = "grey40") +
-  geom_point(size = 4, alpha = 0.8, position = position_jitter(height = 0.02, seed = 1)) +
-  scale_colour_manual(values = c(`FALSE` = nanas_pal[["accent"]], `TRUE` = nanas_pal[["primary"]]),
-                      labels = c("מתחת ל-200", "מעל 200")) +
-  scale_y_continuous(NULL, breaks = NULL, limits = c(-0.1, 0.1)) +
-  labs(title = "15 מתוך 20 בקשות מעל 200 ms", x = "Latency (ms)", colour = NULL)
+rng1 = np.random.default_rng(1)
+jitter = rng1.uniform(-0.02, 0.02, size=len(api))
+above = api.latency_ms > 200
+fig, ax = plt.subplots(figsize=(8, 3))
+ax.axvline(200, linestyle="--", color="grey")
+ax.scatter(api.latency_ms[~above], jitter[~above.values], s=80, alpha=0.8,
+           color=nanas_pal["accent"], label="מתחת ל-200")
+ax.scatter(api.latency_ms[above], jitter[above.values], s=80, alpha=0.8,
+           color=nanas_pal["primary"], label="מעל 200")
+ax.set_ylim(-0.1, 0.1); ax.set_yticks([])
+ax.set_title("15 מתוך 20 בקשות מעל 200 ms", loc="right")
+ax.set_xlabel("Latency (ms)")
+ax.legend()
+plt.show()
 ```
 
 ## מבחן הסימן: חישוב
@@ -324,9 +353,9 @@ ggplot(api, aes(latency_ms, 0, colour = latency_ms > 200)) +
 - ב-$\alpha = 0.01$: $R^*_{0.01} = 3$, ו-$5 > 3$, ולכן **לא דוחים** את $H_0$
 - ב-$\alpha = 0.05$: $R^*_{0.05} = 5$, ו-$5 \le 5$, ולכן **דוחים**
 
-```{r}
+```{python}
 #| label: api-sign
-binom.test(sum(api$latency_ms > 200), n = nrow(api), p = 0.5)
+stats.binomtest(int((api.latency_ms > 200).sum()), n=len(api), p=0.5)
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -337,20 +366,23 @@ binom.test(sum(api$latency_ms > 200), n = nrow(api), p = 0.5)
 
 מרצה טוען שחציון הציונים במועד ב׳ שלו הוא 80. ניגשו 11 סטודנטים. האם הטענה נכונה ב-$\alpha = 0.1$?
 
-```{r}
+```{python}
 #| label: grades
-grades <- read_csv(file.path(data_dir, "exam_grades.csv"), show_col_types = FALSE)
-grades$grade
-binom.test(sum(grades$grade > 80), n = nrow(grades))$p.value  # sign test
+grades = pd.read_csv(f"{data_dir}/exam_grades.csv")
+print(grades.grade.to_list())
+stats.binomtest(int((grades.grade > 80).sum()), n=len(grades)).pvalue  # sign test
 ```
 
 - $r^+ = 3$, $r_0 = 3 > R^*_{0.1,11} = 2$, ולכן טענת המרצה **אינה נדחית**
 - גם מבחן t לתוחלת (בהנחת נורמליות) לא דוחה את $H_0$
 
 ::: {.fragment}
-```{r}
+```{python}
 #| label: grades-ttest
-t.test(grades$grade, mu = 80) |> print(digits = 6)
+res = stats.ttest_1samp(grades.grade, popmean=80)
+ci = res.confidence_interval(confidence_level=0.95)
+print(f"t = {res.statistic:.6g}, df = {res.df:.6g}, p-value = {res.pvalue:.6g}")
+print(f"95% CI for mean: [{ci.low:.6g}, {ci.high:.6g}], mean = {grades.grade.mean():.6g}")
 ```
 :::
 
@@ -360,14 +392,12 @@ t.test(grades$grade, mu = 80) |> print(digits = 6)
 
 **דוגמה:** צוות מוצר שוקל להחליף את [Sonnet 5.5]{.en} ב-[Opus 5.5]{.en}, היקר יותר, למשימות תיוג. שני המודלים תייגו את אותן 11 משימות. **האם Opus טועה פחות?** בטבלה: שיעור השגיאות (%) בכל משימה. $d_i$ = Opus פחות Sonnet. (נתונים מדומים)
 
-```{r}
+```{python}
 #| label: llm-labelling
 #| output-location: slide
-llm_err <- read_csv(file.path(data_dir, "llm_labelling_errors.csv"), show_col_types = FALSE)
-llm_err |>
-  mutate(sign = if_else(opus > sonnet, "+", "-")) |>
-  select(task = task_he, sonnet, opus, sign) |>
-  kable()
+llm_err = pd.read_csv(f"{data_dir}/llm_labelling_errors.csv")
+tbl = llm_err.assign(sign=np.where(llm_err.opus > llm_err.sonnet, "+", "-"))
+tbl[["task_he", "sonnet", "opus", "sign"]].rename(columns={"task_he": "task"})
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -376,10 +406,13 @@ llm_err |>
 
 ## Sonnet מול Opus: התוצאה
 
-```{r}
+```{python}
 #| label: llm-sign-test
-n_plus <- sum(llm_err$opus > llm_err$sonnet)
-binom.test(n_plus, n = nrow(llm_err)) |> print(digits = 6)
+n_plus = int((llm_err.opus > llm_err.sonnet).sum())
+res = stats.binomtest(n_plus, n=len(llm_err))
+ci = res.proportion_ci(confidence_level=0.95)
+print(f"number of successes = {n_plus}, n = {len(llm_err)}, p-value = {res.pvalue:.6g}")
+print(f"95% CI for proportion: [{ci.low:.6g}, {ci.high:.6g}]")
 ```
 
 - $r^+ = 2$, ו-$p = 0.065 < 0.1$, ולכן **דוחים** $H_0$: חציון ההפרשים אינו 0
@@ -458,29 +491,32 @@ $$
 
 אפשר לוודא את הנוסחאות ב-R: עם $n = 5$ יש $2^5 = 32$ צירופי סימנים, וכולם סבירים באותה מידה תחת $H_0$.
 
-```{r}
+```{python}
 #| label: signed-rank-moments
-n <- 5
-signs <- expand.grid(rep(list(0:1), n))       # every sign pattern under H0
-R_plus_all <- as.matrix(signs) %*% (1:n)
+import itertools
+n = 5
+signs = np.array(list(itertools.product([0, 1], repeat=n)))  # every sign pattern under H0
+R_plus_all = signs @ np.arange(1, n + 1)
 
-c(E_exact = mean(R_plus_all),                   E_formula = n * (n + 1) / 4,
-  V_exact = mean((R_plus_all - mean(R_plus_all))^2), V_formula = n * (n + 1) * (2 * n + 1) / 24)
+{"E_exact": R_plus_all.mean(), "E_formula": n * (n + 1) / 4,
+ "V_exact": R_plus_all.var(), "V_formula": n * (n + 1) * (2 * n + 1) / 24}
 ```
 :::
 
 ## חזרה לזמני התגובה
 
-```{r}
+```{python}
 #| label: signed-rank-table
-signed <- api |>
-  mutate(diff = latency_ms - 200,
-         rank = rank(abs(diff)),
-         signed_rank = sign(diff) * rank) |>
-  arrange(rank)
+signed = api.copy()
+signed["diff"] = signed.latency_ms - 200
+signed["rank"] = stats.rankdata(signed["diff"].abs())
+signed["signed_rank"] = np.sign(signed["diff"]) * signed["rank"]
+signed = signed.sort_values("rank")
 
-signed |> summarise(R_plus  = sum(rank[diff > 0]),
-                    R_minus = sum(rank[diff < 0]))
+pd.Series({
+    "R_plus": signed.loc[signed["diff"] > 0, "rank"].sum(),
+    "R_minus": signed.loc[signed["diff"] < 0, "rank"].sum(),
+})
 ```
 
 $$
@@ -490,17 +526,22 @@ $$
 ולכן **דוחים** את $H_0$ ב-$\alpha = 0.1$.
 
 ::: {.content-hidden when-format="revealjs"}
-```{r}
+```{python}
 #| label: signed-rank-full
-signed |> select(request, diff, signed_rank) |> kable()
+signed[["request", "diff", "signed_rank"]]
 ```
 :::
 
 ## בדיקה ב-R
 
-```{r}
+```{python}
 #| label: signed-rank-r
-wilcox.test(api$latency_ms, mu = 200, exact = FALSE)
+d = api.latency_ms - 200
+res = stats.wilcoxon(d, correction=True, method="approx")  # ties present -> normal approximation, like R's exact=FALSE
+nz = d[d != 0]
+ranks = stats.rankdata(nz.abs())
+R_plus = ranks[nz > 0].sum()
+print(f"V (R+) = {R_plus:g}, p-value = {res.pvalue:.6g}")
 ```
 
 - `V` ב-R הוא $R^+$ (156.5), לא $\min(R^+, R^-)$
@@ -510,10 +551,11 @@ wilcox.test(api$latency_ms, mu = 200, exact = FALSE)
 
 נחזור ל-Sonnet מול Opus:
 
-```{r}
+```{python}
 #| label: llm-disagree
-c(sign        = binom.test(n_plus, nrow(llm_err))$p.value,
-  signed_rank = wilcox.test(llm_err$opus, llm_err$sonnet, paired = TRUE)$p.value)
+sign_p = stats.binomtest(n_plus, len(llm_err)).pvalue
+signed_rank_p = stats.wilcoxon(llm_err.opus, llm_err.sonnet, correction=True, method="approx").pvalue
+pd.Series({"sign": sign_p, "signed_rank": signed_rank_p})
 ```
 
 - ב-$\alpha = 0.1$ מבחן הסימן דוחה ומבחן הדירוגים המסומנים לא
@@ -610,13 +652,15 @@ $$
 
 אפשר לוודא את הנוסחאות ב-R: עם $n = 5$ ו-$m = 4$ עוברים על כל $\binom{9}{4} = 126$ הדרכים לבחור את הדרגות של המדגם הקטן, וכולן סבירות באותה מידה תחת $H_0$.
 
-```{r}
+```{python}
 #| label: rank-sum-moments
-n <- 5; m <- 4; N <- n + m
-T_all <- colSums(combn(N, m))   # every possible T under H0
+import itertools
+n, m = 5, 4
+N = n + m
+T_all = np.array([sum(c) for c in itertools.combinations(range(1, N + 1), m)])  # every possible T under H0
 
-c(E_exact = mean(T_all),            E_formula = m * (N + 1) / 2,
-  V_exact = mean((T_all - mean(T_all))^2), V_formula = m * n * (N + 1) / 12)
+{"E_exact": T_all.mean(), "E_formula": m * (N + 1) / 2,
+ "V_exact": T_all.var(), "V_formula": m * n * (N + 1) / 12}
 ```
 :::
 
@@ -624,31 +668,38 @@ c(E_exact = mean(T_all),            E_formula = m * (N + 1) / 2,
 
 שיפור טכנולוגי בתהליך הייצור לא שינה את **צורת** ההתפלגות של התפוקה היומית, אבל הזיז אותה כלפי מעלה. **האם התפוקה עלתה ב-3 יחידות ביום?** ($\alpha = 0.05$)
 
-```{r}
+```{python}
 #| label: production
-prod <- read_csv(file.path(data_dir, "production_output.csv"), show_col_types = FALSE)
-prod |> group_by(period) |> summarise(units = paste(units, collapse = ", "))
+prod = pd.read_csv(f"{data_dir}/production_output.csv")
+prod.groupby("period")["units"].apply(lambda s: ", ".join(map(str, s)))
 ```
 
 **הטריק:** מורידים 3 מהתצפיות שאחרי השיפור. אם התפוקה עלתה ב-3 בדיוק, שני המדגמים מגיעים מאותה התפלגות.
 
 ## דירוג הרשימה המאוחדת
 
-```{r}
+```{python}
 #| label: production-ranks
 #| output-location: slide
 #| fig-height: 2.6
-prod_shift <- prod |>
-  mutate(adj = if_else(period == "after", units - 3, units),
-         rank = rank(adj))
+prod_shift = prod.copy()
+prod_shift["adj"] = np.where(prod_shift.period == "after", prod_shift.units - 3, prod_shift.units)
+prod_shift["rank"] = stats.rankdata(prod_shift["adj"])
 
-ggplot(prod_shift, aes(adj, 0, colour = period, label = rank)) +
-  geom_point(size = 9, alpha = 0.85) +
-  geom_text(colour = "white", fontface = "bold", size = 4) +
-  scale_colour_manual(values = c(after = nanas_pal[["accent"]], before = nanas_pal[["primary"]]),
-                      labels = c(after = "אחרי (פחות 3)", before = "לפני")) +
-  scale_y_continuous(NULL, breaks = NULL) +
-  labs(title = "הדרגות של המדגם המאוחד", x = "Daily output (units)", colour = NULL)
+fig, ax = plt.subplots(figsize=(8, 2.6))
+colors = {"after": nanas_pal["accent"], "before": nanas_pal["primary"]}
+labels = {"after": "אחרי (פחות 3)", "before": "לפני"}
+for period, color in colors.items():
+    sub = prod_shift[prod_shift.period == period]
+    ax.scatter(sub.adj, [0] * len(sub), s=400, alpha=0.85, color=color, label=labels[period])
+    for _, row in sub.iterrows():
+        ax.text(row.adj, 0, f"{row['rank']:g}", color="white", fontweight="bold",
+                ha="center", va="center", fontsize=9)
+ax.set_yticks([])
+ax.set_title("הדרגות של המדגם המאוחד", loc="right")
+ax.set_xlabel("Daily output (units)")
+ax.legend()
+plt.show()
 ```
 
 $$
@@ -665,11 +716,12 @@ $$
 
 ## אותו מבחן ב-R
 
-```{r}
+```{python}
 #| label: production-r
-after  <- prod$units[prod$period == "after"]
-before <- prod$units[prod$period == "before"]
-wilcox.test(after, before, mu = 3)
+after = prod.loc[prod.period == "after", "units"].to_numpy()
+before = prod.loc[prod.period == "before", "units"].to_numpy()
+res = stats.mannwhitneyu(after - 3, before, alternative="two-sided", method="exact")
+print(f"W = {res.statistic:g}, p-value = {res.pvalue:.6g}")
 ```
 
 - ב-R הסטטיסטי `W` הוא $T - \frac{m(m+1)}{2} = 40 - 15 = 25$ (סטטיסטי [Mann–Whitney U]{.en})
@@ -690,12 +742,16 @@ $m$ הוא מספר הפרמטרים שאמדנו מהנתונים. **זה מב�
 
 **דוגמה:** האם משקל הגוף של כל 342 הפינגווינים ב-[Palmer Penguins]{.en} (שלושת המינים יחד) מתפלג נורמלית? מחלקים ל-8 קטגוריות ששוות בהסתברותן תחת הנורמלית המותאמת, כך ש-$E_i = 342/8 = 42.75$. אמדנו $\mu$ ו-$\sigma$, ולכן $m = 2$.
 
-```{r}
+```{python}
 #| label: gof-r
-mass <- na.omit(penguins$body_mass)
-bins <- qnorm(seq(0, 1, by = 1/8), mean(mass), sd(mass))   # 8 equally likely bins under H0
-observed <- table(cut(mass, bins))
-chisq.test(observed)$statistic                              # df = 8 - 1 - 2 = 5, not 7
+mass = penguins.body_mass.dropna().to_numpy()
+m_, s_ = mass.mean(), mass.std(ddof=1)
+edges = stats.norm.ppf(np.linspace(0, 1, 9), m_, s_)        # 8 equally likely bins under H0
+edges[0], edges[-1] = -np.inf, np.inf
+observed, _ = np.histogram(mass, bins=edges)
+expected = np.full(8, len(mass) / 8)
+chi2_stat, _ = stats.chisquare(observed, expected)
+chi2_stat                                                    # df = 8 - 1 - 2 = 5, not 7
 ```
 
 $\chi^2 = 33.86 > 11.07 = \chi^2_{0.95,\,5}$, ולכן **דוחים** $H_0$: המשקל אינו נורמלי. זה תערובת של שלושה מינים.
@@ -737,10 +793,11 @@ $$
 
 נחזור למשקלי הפינגווינים, הפעם בלי לחלק לקטגוריות:
 
-```{r}
+```{python}
 #| label: ks-one-sample-r
 #| warning: false
-ks.test(mass, "pnorm", mean(mass), sd(mass)) |> print(digits = 6)
+res = stats.kstest(mass, stats.norm(loc=mass.mean(), scale=mass.std(ddof=1)).cdf)
+print(f"D = {res.statistic:.6g}, p-value = {res.pvalue:.6g}")
 ```
 
 - $D = 0.104 > 0.074 \approx 1.36/\sqrt{342}$, ולכן **דוחים** $H_0$, בהתאם למבחן חי-בריבוע
@@ -752,29 +809,30 @@ ks.test(mass, "pnorm", mean(mass), sd(mass)) |> print(digits = 6)
 
 ## הפונקציה האמפירית מול הנורמלית
 
-```{r}
+```{python}
 #| label: ks-one-sample-plot
 #| output-location: slide
 #| fig-height: 4.2
-ecdf_mass <- tibble(g = sort(unique(mass))) |>   # g: each distinct weight
-  mutate(Fn = ecdf(mass)(g), F0 = pnorm(g, mean(mass), sd(mass)))
-worst <- ecdf_mass |>
-  mutate(Fn_left = lag(Fn, default = 0),          # the step's value just before g
-         Fn_end  = if_else(abs(Fn - F0) >= abs(Fn_left - F0), Fn, Fn_left),
-         gap     = abs(Fn_end - F0)) |>
-  slice_max(gap, n = 1, with_ties = FALSE)
+g = np.sort(np.unique(mass))
+ecdf_fn = stats.ecdf(mass).cdf.evaluate
+Fn = ecdf_fn(g)
+F0 = stats.norm.cdf(g, m_, s_)
+Fn_left = np.r_[0, Fn[:-1]]
+gap_end = np.where(np.abs(Fn - F0) >= np.abs(Fn_left - F0), Fn, Fn_left)
+gap = np.abs(gap_end - F0)
+worst_i = np.argmax(gap)
 
-ggplot(ecdf_mass, aes(g)) +
-  stat_function(fun = \(x) pnorm(x, mean(mass), sd(mass)),
-                colour = nanas_pal[["grey"]], linewidth = 1, linetype = "dashed") +
-  geom_step(aes(y = Fn), colour = nanas_pal[["primary"]], linewidth = 0.9) +
-  geom_segment(aes(x = g, xend = g, y = F0, yend = Fn_end), data = worst,
-               colour = nanas_pal[["accent"]], linewidth = 1.2) +
-  annotate("label", x = worst$g, y = (worst$F0 + worst$Fn_end) / 2,
-           label = paste0("D = ", round(worst$gap, 3)), hjust = -0.1, fill = "white") +
-  labs(title = "יותר מדי פינגווינים קלים",
-       subtitle = "כחול: התפלגות אמפירית · מקווקו: נורמלית עם אותו ממוצע וסטיית תקן",
-       x = "Body mass (g)", y = "F(x)")
+fig, ax = plt.subplots(figsize=(8, 4.2))
+xs = np.linspace(g.min(), g.max(), 300)
+ax.plot(xs, stats.norm.cdf(xs, m_, s_), color=nanas_pal["grey"], linestyle="--", linewidth=1)
+ax.step(g, Fn, where="post", color=nanas_pal["primary"], linewidth=0.9)
+ax.plot([g[worst_i], g[worst_i]], [F0[worst_i], gap_end[worst_i]],
+        color=nanas_pal["accent"], linewidth=1.2)
+ax.annotate(f"D = {gap[worst_i]:.3f}", (g[worst_i], (F0[worst_i] + gap_end[worst_i]) / 2),
+            ha="left", va="center", bbox=dict(facecolor="white", edgecolor="none"))
+ax.set_title("יותר מדי פינגווינים קלים\nכחול: התפלגות אמפירית · מקווקו: נורמלית עם אותו ממוצע וסטיית תקן", loc="right")
+ax.set_xlabel("Body mass (g)"); ax.set_ylabel("F(x)")
+plt.show()
 ```
 
 ## KS לשני מדגמים
@@ -787,50 +845,59 @@ $$
 
 **דוגמה:** גרסה חדשה של שירות [inference]{.en} עלתה לאוויר. החציון של זמן התגובה כמעט לא השתנה, אבל משתמשים מתלוננים על "קפיצות". נדגמו 60 בקשות מכל גרסה. (נתונים מדומים)
 
-```{r}
+```{python}
 #| label: ks-two-sample-data
-set.seed(1)
-latency <- tibble(
-  version = rep(c("v1", "v2"), each = 60),
-  ms = c(rlnorm(60, log(220), 0.25), rlnorm(60, log(220), 0.65))
+rng2 = np.random.default_rng(1)
+latency = pd.DataFrame({
+    "version": np.repeat(["v1", "v2"], 60),
+    "ms": np.concatenate([
+        rng2.lognormal(np.log(220), 0.25, 60),
+        rng2.lognormal(np.log(220), 0.65, 60),
+    ]),
+})
+latency.groupby("version")["ms"].agg(
+    median="median",
+    iqr=lambda x: np.percentile(x, 75) - np.percentile(x, 25),
+    max="max",
 )
-latency |> summarise(median = median(ms), iqr = IQR(ms), max = max(ms), .by = version)
 ```
 
 ## שתי פונקציות התפלגות מצטברות
 
-```{r}
+```{python}
 #| label: ks-ecdf-plot
 #| output-location: slide
 #| fig-height: 4.2
-grid <- tibble(ms = sort(latency$ms)) |>
-  mutate(v1 = ecdf(latency$ms[latency$version == "v1"])(ms),
-         v2 = ecdf(latency$ms[latency$version == "v2"])(ms),
-         gap = abs(v1 - v2))
-max_gap <- slice_max(grid, gap, n = 1, with_ties = FALSE)
+v1 = latency.loc[latency.version == "v1", "ms"].to_numpy()
+v2 = latency.loc[latency.version == "v2", "ms"].to_numpy()
+ms_sorted = np.sort(latency.ms.to_numpy())
+F1 = stats.ecdf(v1).cdf.evaluate(ms_sorted)
+F2 = stats.ecdf(v2).cdf.evaluate(ms_sorted)
+gap = np.abs(F1 - F2)
+wi = np.argmax(gap)
 
-ggplot(latency, aes(ms, colour = version)) +
-  stat_ecdf(linewidth = 0.9) +
-  geom_segment(aes(x = ms, xend = ms, y = v1, yend = v2), data = max_gap,
-               colour = "grey20", linewidth = 1, inherit.aes = FALSE) +
-  annotate("label", x = max_gap$ms, y = (max_gap$v1 + max_gap$v2) / 2,
-           label = paste0("D = ", round(max_gap$gap, 2)), hjust = 1.1,
-           fill = "white", label.size = 0) +
-  scale_x_log10() +
-  scale_colour_manual(values = c(v1 = nanas_pal[["primary"]], v2 = nanas_pal[["accent"]])) +
-  labs(title = "אותו חציון, פיזור שונה לגמרי",
-       subtitle = "הקו השחור: המרחק הגדול ביותר בין שתי הפונקציות",
-       x = "Response time (ms, log scale)", y = "F(x)", colour = NULL)
+fig, ax = plt.subplots(figsize=(8, 4.2))
+ax.step(np.sort(v1), np.arange(1, len(v1) + 1) / len(v1), where="post",
+        color=nanas_pal["primary"], linewidth=0.9, label="v1")
+ax.step(np.sort(v2), np.arange(1, len(v2) + 1) / len(v2), where="post",
+        color=nanas_pal["accent"], linewidth=0.9, label="v2")
+ax.plot([ms_sorted[wi]] * 2, [F1[wi], F2[wi]], color="grey20" if False else "#333333", linewidth=1)
+ax.annotate(f"D = {gap[wi]:.2f}", (ms_sorted[wi], (F1[wi] + F2[wi]) / 2),
+            ha="right", va="center", bbox=dict(facecolor="white", edgecolor="none"))
+ax.set_xscale("log")
+ax.set_title("אותו חציון, פיזור שונה לגמרי\nהקו השחור: המרחק הגדול ביותר בין שתי הפונקציות", loc="right")
+ax.set_xlabel("Response time (ms, log scale)"); ax.set_ylabel("F(x)")
+ax.legend()
+plt.show()
 ```
 
 ## KS מול סכום הדירוגים
 
-```{r}
+```{python}
 #| label: ks-vs-ranksum
-v1 <- latency$ms[latency$version == "v1"]
-v2 <- latency$ms[latency$version == "v2"]
-c(rank_sum = wilcox.test(v1, v2)$p.value,
-  ks       = ks.test(v1, v2)$p.value)
+rank_sum_p = stats.mannwhitneyu(v1, v2, alternative="two-sided").pvalue
+ks_p = stats.ks_2samp(v1, v2).pvalue
+pd.Series({"rank_sum": rank_sum_p, "ks": ks_p})
 ```
 
 - **סכום הדירוגים** שואל אם תצפית מגרסה אחת נוטה להיות **גדולה** מתצפית מהגרסה השנייה. ב-v2 יש גם זמנים קצרים מאוד וגם ארוכים מאוד: הדרגות שלו מתפזרות לשני הקצוות, מתקזזות, וסכום הדרגות נשאר קרוב לתוחלת שלו
@@ -844,16 +911,16 @@ c(rank_sum = wilcox.test(v1, v2)$p.value,
 ::: {.content-hidden when-format="revealjs"}
 כדי לראות את זה במספרים, נדרג את כל 120 התצפיות יחד ונבדוק איפה נופלות הדרגות של כל גרסה:
 
-```{r}
+```{python}
 #| label: ks-vs-ranksum-ranks
-latency |>
-  mutate(rank = rank(ms)) |>
-  summarise(mean_rank   = mean(rank),          # under H0: (N + 1) / 2 = 60.5
-            bottom_25pc = mean(rank <= 30),    # share of the version's obs in the lowest quarter
-            top_25pc    = mean(rank > 90),     # ... and in the highest quarter
-            .by = version)
+latency["rank"] = stats.rankdata(latency.ms)
+latency.groupby("version")["rank"].agg(
+    mean_rank="mean",                                  # under H0: (N + 1) / 2 = 60.5
+    bottom_25pc=lambda r: (r <= 30).mean(),             # share of the version's obs in the lowest quarter
+    top_25pc=lambda r: (r > 90).mean(),                 # ... and in the highest quarter
+)
 
-mean(outer(v2, v1, ">"))   # estimated P(v2 > v1)
+(v2[:, None] > v1[None, :]).mean()   # estimated P(v2 > v1)
 ```
 
 ממוצע הדרגות של שתי הגרסאות קרוב ל-60.5, הערך הצפוי תחת $H_0$. אבל הדרך שבה הן מגיעות לשם שונה לגמרי. הדרגות של v1 מרוכזות באמצע: רק 13% מהתצפיות שלו נמצאות ברבע התחתון של הרשימה המאוחדת, ו-13% ברבע העליון. ב-v2 זה 37% **בכל אחד** מהקצוות, והקצוות מתקזזים. גם ההסתברות שזמן תגובה מ-v2 יהיה ארוך מזמן תגובה מ-v1 היא 0.497, כמעט בדיוק $\frac{1}{2}$. כפי שראינו, זה בדיוק מה שמבחן סכום הדירוגים בודק, ולכן אין לו במה להיאחז. מבחן KS לא מסכם את הדרגות למספר אחד. הוא משווה את שתי פונקציות ההתפלגות המצטברות בכל נקודה, ולכן הוא רואה את ההבדל בפיזור.
@@ -869,12 +936,14 @@ $$
 
 **אותם זמני תגובה**, מחולקים ל-5 קטגוריות לפי החמישונים של המדגם המאוחד:
 
-```{r}
+```{python}
 #| label: chisq-homogeneity
-breaks <- quantile(latency$ms, seq(0, 1, by = 0.2))   # pooled quintiles
-tab <- table(latency$version, cut(latency$ms, breaks, include.lowest = TRUE, dig.lab = 4))
-tab
-chisq.test(tab)
+breaks = np.quantile(latency.ms, np.arange(0, 1.01, 0.2))   # pooled quintiles
+latency["bucket"] = pd.cut(latency.ms, breaks, include_lowest=True)
+tab = pd.crosstab(latency.version, latency.bucket)
+print(tab)
+chi2, p, dof, expected = stats.chi2_contingency(tab)
+print(f"chi2 = {chi2:.6g}, df = {dof}, p-value = {p:.6g}")
 ```
 
 - בכל קטגוריה 24 בקשות, ולכן $E_{ij} = 12$ בכל תא. ל-v2 יש עודף בשתי הקטגוריות **הקיצוניות**: זה הפיזור הגדול
@@ -918,25 +987,28 @@ $$
 ::: {.content-hidden when-format="revealjs"}
 כדי לפתח אינטואיציה לגודל של $r$, הנה כמה ענני נקודות עם מתאמים שונים. שימו לב לפאנל האחרון: הקשר בין $x$ ל-$y$ חזק מאוד, אבל הוא לא לינארי (וגם לא מונוטוני), ולכן $r$ קרוב לאפס.
 
-```{r}
+```{python}
 #| label: pearson-gallery
 #| fig-height: 3.2
-set.seed(2026)
-gallery <- map_dfr(c(0.9, 0.5, 0, -0.7), \(rho) {
-  x <- rnorm(150)
-  tibble(x, y = rho * x + sqrt(1 - rho^2) * rnorm(150))
-}, .id = "panel") |>
-  bind_rows(tibble(panel = "5", x = runif(150, -2, 2), y = x^2 + rnorm(150, sd = 0.3))) |>
-  mutate(r = cor(x, y), .by = panel) |>
-  mutate(panel = fct_inorder(sprintf("r = %.2f", abs(r) * sign(round(r, 2)))))   # keep creation order, no "-0.00"
+rng3 = np.random.default_rng(2026)
+rhos = [0.9, 0.5, 0, -0.7]
+panels = []
+for rho in rhos:
+    x = rng3.standard_normal(150)
+    y = rho * x + np.sqrt(1 - rho**2) * rng3.standard_normal(150)
+    panels.append((x, y))
+x5 = rng3.uniform(-2, 2, 150)
+y5 = x5**2 + rng3.normal(0, 0.3, 150)
+panels.append((x5, y5))
 
-ggplot(gallery, aes(x, y)) +
-  geom_point(alpha = 0.5, size = 1) +
-  facet_wrap(~ panel, nrow = 1, scales = "free_y") +
-  labs(title = "מה r מודד: עד כמה הנקודות קרובות לקו ישר",
-       subtitle = "בפאנל הימני הקשר חזק מאוד, אבל לא לינארי, ולכן r קרוב לאפס",
-       x = "x", y = "y") +
-  theme(axis.text = element_blank())
+fig, axes = plt.subplots(1, 5, figsize=(13, 3.2))
+for ax, (x, y) in zip(axes, panels):
+    r = np.corrcoef(x, y)[0, 1]
+    ax.scatter(x, y, alpha=0.5, s=10, color=nanas_pal["primary"])
+    ax.set_title(f"r = {r:.2f}")
+    ax.set_xticks([]); ax.set_yticks([])
+fig.suptitle("מה r מודד: עד כמה הנקודות קרובות לקו ישר\nבפאנל הימני הקשר חזק מאוד, אבל לא לינארי, ולכן r קרוב לאפס")
+plt.show()
 ```
 :::
 
@@ -1046,40 +1118,44 @@ $$
 
 אפשר לוודא את שני החישובים ב-R:
 
-```{r}
+```{python}
 #| label: rank-corr-hand
-judge <- tibble(human = c(3.1, 4.5, 5.2, 6.8, 7.4, 8.9),
-                llm   = c(52, 47, 61, 58, 74, 70))
+judge = pd.DataFrame({"human": [3.1, 4.5, 5.2, 6.8, 7.4, 8.9],
+                       "llm": [52, 47, 61, 58, 74, 70]})
 
-c(spearman          = cor(judge$human, judge$llm, method = "spearman"),
-  pearson_on_ranks  = cor(rank(judge$human), rank(judge$llm)),
-  kendall           = cor(judge$human, judge$llm, method = "kendall"))
+pd.Series({
+    "spearman": stats.spearmanr(judge.human, judge.llm).statistic,
+    "pearson_on_ranks": np.corrcoef(stats.rankdata(judge.human), stats.rankdata(judge.llm))[0, 1],
+    "kendall": stats.kendalltau(judge.human, judge.llm).statistic,
+})
 ```
 :::
 
 ## דוגמה: קשר מונוטוני וערך חריג אחד
 
-```{r}
+```{python}
 #| label: corr-sim
 #| output-location: slide
 #| fig-height: 4
-set.seed(2026)   # own seed, so edits elsewhere in the lecture don't change this example
-corr_data <- tibble(x = 1:30, y = exp(x / 6) + rnorm(30, sd = 1.5)) |>
-  add_row(x = 2, y = 160)   # one data-entry error
+rng4 = np.random.default_rng(2026)   # own seed, so edits elsewhere in the lecture don't change this example
+x = np.arange(1, 31)
+y = np.exp(x / 6) + rng4.normal(0, 1.5, 30)
+corr_data = pd.concat([pd.DataFrame({"x": x, "y": y}),
+                        pd.DataFrame({"x": [2], "y": [160]})], ignore_index=True)  # one data-entry error
 
-stats <- c(
-  pearson  = cor(corr_data$x, corr_data$y),
-  spearman = cor(corr_data$x, corr_data$y, method = "spearman"),
-  kendall  = cor(corr_data$x, corr_data$y, method = "kendall")
-)   # shown in the chart title
+corr_stats = {
+    "pearson": np.corrcoef(corr_data.x, corr_data.y)[0, 1],
+    "spearman": stats.spearmanr(corr_data.x, corr_data.y).statistic,
+    "kendall": stats.kendalltau(corr_data.x, corr_data.y).statistic,
+}
 
-ggplot(corr_data, aes(x, y)) +
-  geom_point(size = 2.5) +
-  annotate("label", x = 3.5, y = 160, label = "שגיאת הקלדה", hjust = 0) +
-  labs(title = sprintf("Pearson = %.2f · Spearman = %.2f · Kendall = %.2f",
-                       stats["pearson"], stats["spearman"], stats["kendall"]),
-       subtitle = "קשר מונוטוני ברור, עם תצפית חריגה אחת",
-       x = "x", y = "y")
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.scatter(corr_data.x, corr_data.y, s=25, color=nanas_pal["primary"])
+ax.annotate("שגיאת הקלדה", (3.5, 160), ha="left")
+ax.set_title("Pearson = {pearson:.2f} · Spearman = {spearman:.2f} · Kendall = {kendall:.2f}\nקשר מונוטוני ברור, עם תצפית חריגה אחת".format(**corr_stats),
+             loc="right")
+ax.set_xlabel("x"); ax.set_ylabel("y")
+plt.show()
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -1090,31 +1166,35 @@ ggplot(corr_data, aes(x, y)) +
 
 אותם 150 משיבים מסקר הליקרט נשאלו גם **"באיזו מידה את/ה אוהב/ת ספרות?"**. **האם מי שאוהב סטטיסטיקה נוטה לאהוב ספרות פחות?**
 
-```{r}
+```{python}
 #| label: likert-corr-data
 #| output-location: slide
 #| fig-height: 4.2
 # Fixed cross-tab (no RNG). Rows: liking statistics (same margins as the earlier Likert slide)
-counts <- matrix(c( 2,  3, 5, 10, 16,
-                    2,  3, 6,  8,  6,
-                    2,  3, 3,  2,  2,
-                    7,  8, 7,  5,  3,
-                   18, 13, 8,  5,  3), nrow = 5, byrow = TRUE)
-survey <- expand_grid(stats = 1:5, literature = 1:5) |>
-  mutate(n = as.vector(t(counts))) |>
-  uncount(n)
+counts_mat = np.array([
+    [2, 3, 5, 10, 16],
+    [2, 3, 6, 8, 6],
+    [2, 3, 3, 2, 2],
+    [7, 8, 7, 5, 3],
+    [18, 13, 8, 5, 3],
+])
+rows, cols = [], []
+for i in range(5):
+    for j in range(5):
+        rows += [i + 1] * counts_mat[i, j]
+        cols += [j + 1] * counts_mat[i, j]
+survey = pd.DataFrame({"stats": rows, "literature": cols})
 
-survey |>
-  count(stats, literature) |>
-  ggplot(aes(stats, literature, fill = n)) +
-  geom_tile(colour = "white") +
-  geom_text(aes(label = n)) +
-  scale_x_continuous(breaks = 1:5, labels = likert_levels) +
-  scale_y_continuous(breaks = 1:5, labels = likert_levels) +
-  scale_fill_gradient(low = "white", high = nanas_pal[["primary"]], guide = "none") +
-  labs(title = "מי שאוהב סטטיסטיקה נוטה לאהוב ספרות פחות",
-       subtitle = "מספר המשיבים בכל צירוף תשובות",
-       x = "Liking statistics", y = "Liking literature")
+fig, ax = plt.subplots(figsize=(8, 4.2))
+im = ax.imshow(counts_mat, cmap="Blues", origin="lower")
+for i in range(5):
+    for j in range(5):
+        ax.text(j, i, counts_mat[i, j], ha="center", va="center")
+ax.set_xticks(range(5)); ax.set_xticklabels(likert_levels, rotation=30, ha="right")
+ax.set_yticks(range(5)); ax.set_yticklabels(likert_levels)
+ax.set_title("מי שאוהב סטטיסטיקה נוטה לאהוב ספרות פחות\nמספר המשיבים בכל צירוף תשובות", loc="right")
+ax.set_xlabel("Liking statistics"); ax.set_ylabel("Liking literature")
+plt.show()
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -1127,9 +1207,10 @@ $$
 H_0: \tau = 0 \qquad H_1: \tau \neq 0
 $$
 
-```{r}
+```{python}
 #| label: likert-corr-test
-cor.test(survey$stats, survey$literature, method = "kendall", exact = FALSE)
+res = stats.kendalltau(survey.stats, survey.literature)  # ties present -> normal approximation, like R's exact=FALSE
+print(f"tau = {res.statistic:.6g}, p-value = {res.pvalue:.6g}")
 ```
 
 - `tau` שלילי: בזוג אקראי של משיבים, מי שאוהב סטטיסטיקה יותר נוטה לאהוב ספרות **פחות**
@@ -1139,11 +1220,13 @@ cor.test(survey$stats, survey$literature, method = "kendall", exact = FALSE)
 ::: {.content-hidden when-format="revealjs"}
 למה לא פירסון? פירסון מתייחס לקודים 1 עד 5 כאל מספרים עם מרחקים שווים, ואת זה אנחנו לא יודעים בסולם סדור. ספירמן וקנדל משתמשים רק בסדר. במקרה הזה שלושת המדדים קרובים, אבל רק המדדים על הדרגות **מוצדקים** מראש:
 
-```{r}
+```{python}
 #| label: likert-corr-compare
-c(pearson  = cor(survey$stats, survey$literature),
-  spearman = cor(survey$stats, survey$literature, method = "spearman"),
-  kendall  = cor(survey$stats, survey$literature, method = "kendall"))
+pd.Series({
+    "pearson": np.corrcoef(survey.stats, survey.literature)[0, 1],
+    "spearman": stats.spearmanr(survey.stats, survey.literature).statistic,
+    "kendall": stats.kendalltau(survey.stats, survey.literature).statistic,
+})
 ```
 
 שימו לב ש-$|\tau|$ קטן מ-$|\rho_S|$. זה טיפוסי, ולא אומר שהקשר "חלש יותר". שני המדדים פשוט נמדדים בסקאלה אחרת. ועוד הערה: מדובר בקשר, לא בסיבתיות. אהבה לסטטיסטיקה לא "מורידה" אהבה לספרות. סביר יותר שמשתנה שלישי, כמו תחום הלימודים, קשור לשניהם.
@@ -1171,21 +1254,24 @@ c(pearson  = cor(survey$stats, survey$literature),
 
 ## הנתונים
 
-```{r}
+```{python}
 #| label: argentina-plot
 #| output-location: slide
 #| fig-height: 4
-arg <- read_csv(file.path(data_dir, "argentina_world_cup.csv"), show_col_types = FALSE)
+arg = pd.read_csv(f"{data_dir}/argentina_world_cup.csv")
 
-ggplot(arg, aes(year, rank, colour = host_in_europe)) +
-  geom_point(size = 3.5) +
-  geom_point(data = filter(arg, is.na(rank)), aes(y = 18), shape = 4, size = 3, colour = "grey50") +
-  scale_y_reverse(breaks = c(1, 4, 8, 12, 16)) +
-  scale_colour_manual(values = c(`TRUE` = nanas_pal[["primary"]], `FALSE` = nanas_pal[["accent"]]),
-                      labels = c(`TRUE` = "באירופה", `FALSE` = "מחוץ לאירופה")) +
-  labs(title = "הדירוג של ארגנטינה במונדיאלים, 1930–2022",
-       subtitle = "×: לא השתתפה או לא הגיעה ל-16 הגדולות",
-       x = "Year", y = "Final rank", colour = NULL)
+fig, ax = plt.subplots(figsize=(8, 4))
+for host, color, label in [(True, nanas_pal["primary"], "באירופה"), (False, nanas_pal["accent"], "מחוץ לאירופה")]:
+    sub = arg[(arg.host_in_europe == host) & arg["rank"].notna()]
+    ax.scatter(sub.year, sub["rank"], s=60, color=color, label=label)
+missing = arg[arg["rank"].isna()]
+ax.scatter(missing.year, [18] * len(missing), marker="x", s=50, color="grey")
+ax.invert_yaxis()
+ax.set_yticks([1, 4, 8, 12, 16])
+ax.set_title("הדירוג של ארגנטינה במונדיאלים, 1930–2022\n×: לא השתתפה או לא הגיעה ל-16 הגדולות", loc="right")
+ax.set_xlabel("Year"); ax.set_ylabel("Final rank")
+ax.legend()
+plt.show()
 ```
 
 ## השאלות {.smaller}
@@ -1210,12 +1296,13 @@ ggplot(arg, aes(year, rank, colour = host_in_europe)) +
 **ב.** $H_0: \tilde\mu = 4.5$ (החציון מפריד בין דירוג 4 לשאר). אי אפשר להניח סימטריה, ולכן משתמשים במבחן הסימן.
 :::
 
-```{r}
+```{python}
 #| label: argentina-sign
-arg18 <- arg |> filter(year <= 2018) |> mutate(rank_filled = coalesce(rank, 17))
-n_top4 <- sum(arg18$rank_filled < 4.5)
-c(n = nrow(arg18), r0 = n_top4, R_crit = sign_critical(nrow(arg18), 0.05))
-binom.test(n_top4, nrow(arg18))$p.value     # = alpha in (c): 2 * P(r <= 5)
+arg18 = arg[arg.year <= 2018].copy()
+arg18["rank_filled"] = arg18["rank"].fillna(17)
+n_top4 = int((arg18.rank_filled < 4.5).sum())
+pd.Series({"n": len(arg18), "r0": n_top4, "R_crit": sign_critical(len(arg18), 0.05)})
+stats.binomtest(n_top4, len(arg18)).pvalue     # = alpha in (c): 2 * P(r <= 5)
 ```
 
 $r_0 = 5 \le 5 = R^*_{0.05,21}$, ולכן **דוחים** $H_0$: אי אפשר לקבוע שהחציון הוא 4.5. התשובה לשאלה היא **לא**.
@@ -1224,13 +1311,15 @@ $r_0 = 5 \le 5 = R^*_{0.05,21}$, ולכן **דוחים** $H_0$: אי אפשר ל
 
 ## פתרון (סעיפים ד–ו) {.smaller}
 
-```{r}
+```{python}
 #| label: argentina-ranksum
-with(arg18, wilcox.test(rank_filled[!host_in_europe], rank_filled[host_in_europe],
-                        exact = FALSE))$p.value
+stats.mannwhitneyu(arg18.loc[~arg18.host_in_europe, "rank_filled"],
+                    arg18.loc[arg18.host_in_europe, "rank_filled"],
+                    alternative="two-sided").pvalue
 
-arg22 <- arg |> mutate(rank_filled = coalesce(rank, 17))
-binom.test(sum(arg22$rank_filled < 4.5), nrow(arg22))$p.value
+arg22 = arg.copy()
+arg22["rank_filled"] = arg22["rank"].fillna(17)
+stats.binomtest(int((arg22.rank_filled < 4.5).sum()), len(arg22)).pvalue
 ```
 
 - **ד.** $p \approx 0.48$: **לא דוחים**. אין ראיה לכך שארגנטינה מצליחה יותר מחוץ לאירופה

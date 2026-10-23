@@ -8,13 +8,20 @@ format:
     output-file: 03-multiple-regression-slides.html
 ---
 
-```{r}
+```{python}
 #| label: setup
 #| include: false
-source("../R/setup.R")
-library(broom)
-model_cols <- c(small = nanas_pal[["primary"]], medium = nanas_pal[["green"]],
-                large = nanas_pal[["accent"]])
+import sys
+sys.path.insert(0, "..")
+from py.setup import nanas_pal, apply_nanas_theme
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from scipy import stats
+
+model_cols = {"small": nanas_pal["primary"], "medium": nanas_pal["green"], "large": nanas_pal["accent"]}
 ```
 
 ## על מה נדבר היום
@@ -35,25 +42,27 @@ model_cols <- c(small = nanas_pal[["primary"]], medium = nanas_pal[["green"]],
 
 **השאלות:** בכמה עולה ניצולת המעבד עם כל אלף בקשות נוספות בדקה? והאם הקשר הזה "אמיתי", או שהוא יכול להיות מקרי?
 
-```{r}
+```{python}
 #| label: cpu-data
-cpu <- tibble(
-  load = c(10, 11.5, 14.5, 12, 15, 16.6, 12.5, 13, 14, 17),       # k requests / min
-  util = c(15, 16.6, 20.2, 16.3, 19.4, 24.4, 17, 17.1, 17.7, 24.4)  # CPU %
-)
+cpu = pd.DataFrame({
+    "load": [10, 11.5, 14.5, 12, 15, 16.6, 12.5, 13, 14, 17],         # k requests / min
+    "util": [15, 16.6, 20.2, 16.3, 19.4, 24.4, 17, 17.1, 17.7, 24.4],  # CPU %
+})
 ```
 
 ## הנתונים
 
-```{r}
+```{python}
 #| label: cpu-plot
 #| fig-height: 4
-ggplot(cpu, aes(load, util)) +
-  geom_smooth(method = "lm", se = FALSE, colour = nanas_pal[["grey"]], linewidth = 0.8) +
-  geom_point(size = 3) +
-  labs(title = "ככל שהעומס עולה, המעבד עובד קשה יותר",
-       subtitle = "עשרה חלונות זמן · הקו: קו הריבועים הפחותים",
-       x = "Load (k requests / min)", y = "CPU utilisation (%)")
+b1, b0 = np.polyfit(cpu.load, cpu.util, 1)
+xs = np.linspace(cpu.load.min(), cpu.load.max(), 50)
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(xs, b0 + b1 * xs, color=nanas_pal["grey"], linewidth=0.8)
+ax.scatter(cpu.load, cpu.util, s=40, color=nanas_pal["primary"])
+ax.set_title("ככל שהעומס עולה, המעבד עובד קשה יותר\nעשרה חלונות זמן · הקו: קו הריבועים הפחותים", loc="right")
+ax.set_xlabel("Load (k requests / min)"); ax.set_ylabel("CPU utilisation (%)")
+plt.show()
 ```
 
 ## המודל {.smaller}
@@ -97,12 +106,15 @@ $$
 
 ## חישוב ידני {.smaller}
 
-```{r}
+```{python}
 #| label: cpu-sums
-cpu |> summarise(n = n(), x_bar = mean(load), y_bar = mean(util),
-                 Sxx = sum((load - x_bar)^2),
-                 Sxy = sum((load - x_bar) * (util - y_bar)),
-                 Syy = sum((util - y_bar)^2))
+x_bar, y_bar = cpu.load.mean(), cpu.util.mean()
+pd.Series({
+    "n": len(cpu), "x_bar": x_bar, "y_bar": y_bar,
+    "Sxx": ((cpu.load - x_bar) ** 2).sum(),
+    "Sxy": ((cpu.load - x_bar) * (cpu.util - y_bar)).sum(),
+    "Syy": ((cpu.util - y_bar) ** 2).sum(),
+})
 ```
 
 $$
@@ -122,10 +134,10 @@ $$
 
 ## אותו חישוב ב-R {.smaller}
 
-```{r}
+```{python}
 #| label: cpu-lm
-fit_cpu <- lm(util ~ load, data = cpu)
-summary(fit_cpu)
+fit_cpu = smf.ols("util ~ load", data=cpu).fit()
+print(fit_cpu.summary())
 ```
 
 ## איך קוראים את הפלט {.smaller}
@@ -151,9 +163,10 @@ $$
 
 אם מחסירים מ-$x$ את הממוצע שלו, $\bar x = 0$, והחותך הופך ל-$\bar y$: הניצולת הצפויה **בעומס הממוצע**.
 
-```{r}
+```{python}
 #| label: cpu-centered
-lm(util ~ I(load - mean(load)), data = cpu) |> summary() |> coef()
+cpu_c = cpu.assign(load_c=cpu.load - cpu.load.mean())
+smf.ols("util ~ load_c", data=cpu_c).fit().summary().tables[1]
 ```
 
 - השיפוע לא השתנה, ושגיאת התקן של החותך ירדה מ-2.32 ל-$\hat\sigma / \sqrt{n} = 1.132 / \sqrt{10} = 0.358$
@@ -171,9 +184,9 @@ $$
 | שגיאה | $SS_E$ | $n - 2$ | $MS_E = SS_E / (n-2)$ | |
 | סך הכול | $SS_T$ | $n - 1$ | | |
 
-```{r}
+```{python}
 #| label: cpu-anova
-anova(fit_cpu)
+sm.stats.anova_lm(fit_cpu, typ=1)
 ```
 
 **מקדם המתאם המרובה:** $R^2 = SS_R / SS_T = 87.66 / 97.91 = 0.895$
@@ -196,27 +209,34 @@ anova(fit_cpu)
 
 ## הנתונים
 
-```{r}
+```{python}
 #| label: llm-data
-set.seed(303)   # own seed, so edits elsewhere in the lecture don't change this example
-n_calls <- 250
-sizes <- c("small", "medium", "large")
-median_output <- c(small = 250,   medium = 350,   large = 500)    # tokens
-sec_per_token <- c(small = 0.010, medium = 0.018, large = 0.030)
+# Own RNG stream, so edits elsewhere in the lecture don't change this example.
+# Note: numpy's RNG differs from R's, so exact simulated values differ from the
+# R original, but the data-generating recipe (and so the statistical conclusions
+# below) is identical.
+rng = np.random.default_rng(303)
+n_calls = 250
+sizes = ["small", "medium", "large"]
+median_output = {"small": 250, "medium": 350, "large": 500}      # tokens
+sec_per_token = {"small": 0.010, "medium": 0.018, "large": 0.030}
 
-llm <- tibble(
-  model    = factor(sample(sizes, n_calls, replace = TRUE, prob = c(0.5, 0.3, 0.2)), sizes),
-  rag_docs = rpois(n_calls, 3),                         # documents added to the prompt
-  input_tokens  = round(300 + 550 * rag_docs + rlnorm(n_calls, log(400), 0.6)),
-  output_tokens = round(rlnorm(n_calls, log(median_output[as.character(model)]), 0.5)),
-  hour     = sample(0:23, n_calls, replace = TRUE)
-) |>
-  mutate(latency = 0.8 + 0.25 * input_tokens / 1000 +
-           sec_per_token[as.character(model)] * output_tokens + rnorm(n_calls, 0, 1),
-         latency = round(latency, 2),
-         input_k = input_tokens / 1000)
+model = pd.Categorical(rng.choice(sizes, n_calls, p=[0.5, 0.3, 0.2]), categories=sizes)
+rag_docs = rng.poisson(3, n_calls)                                # documents added to the prompt
+input_tokens = np.round(300 + 550 * rag_docs + rng.lognormal(np.log(400), 0.6, n_calls))
+output_tokens = np.round([rng.lognormal(np.log(median_output[m]), 0.5) for m in model])
+hour = rng.integers(0, 24, n_calls)
 
-llm |> select(model, input_tokens, output_tokens, rag_docs, hour, latency) |> head(4)
+llm = pd.DataFrame({
+    "model": model, "rag_docs": rag_docs, "input_tokens": input_tokens,
+    "output_tokens": output_tokens, "hour": hour,
+})
+sec_tok = llm.model.map(sec_per_token)
+llm["latency"] = np.round(0.8 + 0.25 * llm.input_tokens / 1000 +
+                           sec_tok * llm.output_tokens + rng.normal(0, 1, n_calls), 2)
+llm["input_k"] = llm.input_tokens / 1000
+
+llm[["model", "input_tokens", "output_tokens", "rag_docs", "hour", "latency"]].head(4)
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -225,16 +245,18 @@ llm |> select(model, input_tokens, output_tokens, rag_docs, hour, latency) |> he
 
 ## זמן התגובה מול אורך התשובה
 
-```{r}
+```{python}
 #| label: llm-plot
 #| output-location: slide
 #| fig-height: 4.2
-ggplot(llm, aes(output_tokens, latency, colour = model)) +
-  geom_point(alpha = 0.7) +
-  scale_colour_manual(values = model_cols) +
-  labs(title = "תשובה ארוכה יותר, המתנה ארוכה יותר",
-       subtitle = "וכל מודל שפה עם שיפוע משלו",
-       x = "Output tokens", y = "Latency (s)", colour = NULL)
+fig, ax = plt.subplots(figsize=(8, 4.2))
+for m, color in model_cols.items():
+    sub = llm[llm.model == m]
+    ax.scatter(sub.output_tokens, sub.latency, alpha=0.7, color=color, label=m)
+ax.set_title("תשובה ארוכה יותר, המתנה ארוכה יותר\nוכל מודל שפה עם שיפוע משלו", loc="right")
+ax.set_xlabel("Output tokens"); ax.set_ylabel("Latency (s)")
+ax.legend()
+plt.show()
 ```
 
 ## המודל {.smaller}
@@ -249,10 +271,10 @@ $$
 
 נתחיל משני משתנים מסבירים: הטוקנים בקלט (באלפים) והטוקנים בפלט.
 
-```{r}
+```{python}
 #| label: llm-fit2
-fit2 <- lm(latency ~ input_k + output_tokens, data = llm)
-coef(fit2)
+fit2 = smf.ols("latency ~ input_k + output_tokens", data=llm).fit()
+fit2.params
 ```
 
 ## רישום מטריציוני ([Matrix form]{.en}) {.smaller}
@@ -271,11 +293,11 @@ $$
 - העמודה של אחדות ב-$X$ היא החותך
 - צריך ש-$X'X$ תהיה הפיכה: אף משתנה לא יכול להיות צירוף לינארי מדויק של האחרים
 
-```{r}
+```{python}
 #| label: llm-matrix
-X <- model.matrix(~ input_k + output_tokens, data = llm)   # adds the column of ones
-y <- llm$latency
-solve(t(X) %*% X) %*% t(X) %*% y                            # same as coef(fit2)
+X = sm.add_constant(llm[["input_k", "output_tokens"]]).to_numpy()  # adds the column of ones
+y = llm.latency.to_numpy()
+np.linalg.solve(X.T @ X, X.T @ y)                                   # same as fit2.params
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -294,17 +316,17 @@ t = \frac{\hat\beta_j}{se(\hat\beta_j)} \sim t_{n-k-1} \qquad
 \hat\beta_j \pm t_{1-\alpha/2,\, n-k-1} \cdot se(\hat\beta_j)
 $$
 
-```{r}
+```{python}
 #| label: llm-se
-sigma2_hat <- sum(resid(fit2)^2) / (nrow(X) - ncol(X))     # SSE / (n - k - 1)
-sqrt(diag(sigma2_hat * solve(t(X) %*% X)))                  # = "Std. Error" in summary()
+sigma2_hat = (fit2.resid ** 2).sum() / (X.shape[0] - X.shape[1])  # SSE / (n - k - 1)
+np.sqrt(np.diag(sigma2_hat * np.linalg.inv(X.T @ X)))              # = "std err" in summary()
 ```
 
 ## הפלט המלא {.smaller}
 
-```{r}
+```{python}
 #| label: llm-fit2-summary
-summary(fit2)
+print(fit2.summary())
 ```
 
 ## איך קוראים את הפלט {.smaller}
@@ -348,13 +370,17 @@ $$
 - **הבעיה של $R^2$:** הוא **אף פעם לא יורד** כשמוסיפים משתנה, גם אם המשתנה הוא רעש טהור
 - **$R^2$ המתוקן** "מעניש" על כל משתנה נוסף. הוא עולה רק אם המשתנה מקטין את $MS_E$. למקסם אותו זה כמו למזער את $MS_E$
 
-```{r}
+```{python}
 #| label: adj-r2-noise
-set.seed(8)
-llm_noise <- llm |> mutate(noise1 = rnorm(n()), noise2 = rnorm(n()), noise3 = rnorm(n()))
-fit_noise <- lm(latency ~ input_k + output_tokens + noise1 + noise2 + noise3, data = llm_noise)
-rbind(fit2      = c(R2 = summary(fit2)$r.squared,      adj = summary(fit2)$adj.r.squared),
-      fit_noise = c(R2 = summary(fit_noise)$r.squared, adj = summary(fit_noise)$adj.r.squared))
+rng_n = np.random.default_rng(8)
+llm_noise = llm.assign(noise1=rng_n.standard_normal(len(llm)),
+                        noise2=rng_n.standard_normal(len(llm)),
+                        noise3=rng_n.standard_normal(len(llm)))
+fit_noise = smf.ols("latency ~ input_k + output_tokens + noise1 + noise2 + noise3", data=llm_noise).fit()
+pd.DataFrame({
+    "fit2": {"R2": fit2.rsquared, "adj": fit2.rsquared_adj},
+    "fit_noise": {"R2": fit_noise.rsquared, "adj": fit_noise.rsquared_adj},
+}).T
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -396,23 +422,25 @@ $$
 - למה לא $m$ משתנים? כי אז $D_{small} + D_{medium} + D_{large} = 1$, בדיוק כמו עמודת החותך, ו-$X'X$ לא הפיכה
 - R יוצר את משתני הדמה בעצמו מכל `factor`. רמת הבסיס היא הרמה הראשונה (`levels`)
 
-```{r}
+```{python}
 #| label: dummies
-model.matrix(~ model, data = llm) |> head(3)
+pd.get_dummies(llm[["model"]], drop_first=True).astype(int).assign(Intercept=1).iloc[:3][["Intercept", "model_medium", "model_large"]]
 ```
 
 ## האם מודל השפה הגדול איטי יותר? {.smaller}
 
-```{r}
+```{python}
 #| label: confounding
-fit_raw <- lm(latency ~ model, data = llm)                            # model only
-fit3    <- lm(latency ~ input_k + output_tokens + model, data = llm)  # same length of answer
-rbind(raw = coef(fit_raw)[c("modelmedium", "modellarge")],
-      adjusted = coef(fit3)[c("modelmedium", "modellarge")])
+fit_raw = smf.ols("latency ~ model", data=llm).fit()                             # model only
+fit3 = smf.ols("latency ~ input_k + output_tokens + model", data=llm).fit()      # same length of answer
+pd.DataFrame({
+    "raw": fit_raw.params[["model[T.medium]", "model[T.large]"]].to_numpy(),
+    "adjusted": fit3.params[["model[T.medium]", "model[T.large]"]].to_numpy(),
+}, index=["modelmedium", "modellarge"])
 ```
 
-- **בלי לשלוט באורך התשובה:** קריאה למודל השפה הגדול איטית ב-`r round(coef(fit_raw)["modellarge"], 1)` שניות מקריאה למודל השפה הקטן
-- **באותו מספר טוקנים:** הפער יורד ל-`r round(coef(fit3)["modellarge"], 1)` שניות
+- **בלי לשלוט באורך התשובה:** קריאה למודל השפה הגדול איטית ב-`{python} round(fit_raw.params["model[T.large]"], 1)` שניות מקריאה למודל השפה הקטן
+- **באותו מספר טוקנים:** הפער יורד ל-`{python} round(fit3.params["model[T.large]"], 1)` שניות
 - חלק מהפער נובע מכך שמודל השפה הגדול כותב תשובות ארוכות יותר. זה **משתנה מערבב** ([confounder]{.en})
 - "שליטה" במשתנה ([controlling for]{.en}) פירושה להשוות קריאות עם אותו ערך שלו
 
@@ -428,19 +456,19 @@ $$
 
 $q$ הוא מספר המקדמים שנבדקים, ו-$k$ הוא מספר המשתנים במודל **המלא**.
 
-```{r}
+```{python}
 #| label: partial-f
-anova(fit2, fit3)
+sm.stats.anova_lm(fit2, fit3)
 ```
 
 ## איך קוראים את הפלט
 
-- **`RSS`**: סכום ריבועי השגיאות ($SS_E$) של כל מודל. משתני הדמה הורידו אותו מ-`r round(deviance(fit2))` ל-`r round(deviance(fit3))`
+- **`RSS`**: סכום ריבועי השגיאות ($SS_E$) של כל מודל. משתני הדמה הורידו אותו מ-`{python} round(fit2.ssr)` ל-`{python} round(fit3.ssr)`
 - **`Df = 2`**: הוספנו $q = 2$ מקדמים
 - **בחישוב ידני** (דוחים את $H_0$: גודל מודל השפה משפיע):
 
 $$
-F = \frac{(`r round(deviance(fit2))` - `r round(deviance(fit3))`) / 2}{`r round(deviance(fit3))` / 245} = `r round(anova(fit2, fit3)$F[2])`
+F = \frac{(`{python} round(fit2.ssr)` - `{python} round(fit3.ssr)`) / 2}{`{python} round(fit3.ssr)` / 245} = `{python} round(sm.stats.anova_lm(fit2, fit3)["F"].iloc[1])`
 $$
 
 - כש-$q = 1$, מבחן F החלקי שקול למבחן t של אותו מקדם: $F = t^2$
@@ -452,17 +480,22 @@ $$
 
 ברגרסיה `fit3` לכל מודל שפה יש חותך משלו, אבל **אותו שיפוע**: אותו זמן לכל טוקן בתשובה. זה סביר?
 
-```{r}
+```{python}
 #| label: parallel-lines
 #| output-location: slide
 #| fig-height: 4.2
-ggplot(augment(fit3), aes(output_tokens, colour = model)) +
-  geom_point(aes(y = latency), alpha = 0.5) +
-  geom_smooth(aes(y = .fitted), method = "lm", se = FALSE, linewidth = 1) +
-  scale_colour_manual(values = model_cols) +
-  labs(title = "קווים מקבילים לא מתאימים לנתונים",
-       subtitle = "הקווים: החיזוי של רגרסיה בלי אינטראקציה (בממוצע הקלט)",
-       x = "Output tokens", y = "Latency (s)", colour = NULL)
+aug3 = llm.assign(fitted=fit3.fittedvalues)
+fig, ax = plt.subplots(figsize=(8, 4.2))
+for m, color in model_cols.items():
+    sub = aug3[aug3.model == m]
+    ax.scatter(sub.output_tokens, sub.latency, alpha=0.5, color=color)
+    b1, b0 = np.polyfit(sub.output_tokens, sub.fitted, 1)
+    xs = np.linspace(sub.output_tokens.min(), sub.output_tokens.max(), 30)
+    ax.plot(xs, b0 + b1 * xs, color=color, linewidth=1, label=m)
+ax.set_title("קווים מקבילים לא מתאימים לנתונים\nהקווים: החיזוי של רגרסיה בלי אינטראקציה (בממוצע הקלט)", loc="right")
+ax.set_xlabel("Output tokens"); ax.set_ylabel("Latency (s)")
+ax.legend()
+plt.show()
 ```
 
 ## מודל עם אינטראקציה {.smaller}
@@ -481,52 +514,56 @@ $$
 
 ב-R, `output_tokens * model` הוא קיצור של `output_tokens + model + output_tokens:model`.
 
-```{r}
+```{python}
 #| label: fit4
 #| output-location: slide
-fit4 <- lm(latency ~ input_k + output_tokens * model, data = llm)
-summary(fit4)
+fit4 = smf.ols("latency ~ input_k + output_tokens * model", data=llm).fit()
+print(fit4.summary())
 ```
 
 ## איך קוראים את הפלט {.smaller}
 
-```{r}
+```{python}
 #| label: ms-per-token
 #| include: false
-b <- coef(fit4)
-ms_tok <- round(1000 * c(small  = b[["output_tokens"]],
-                         medium = b[["output_tokens"]] + b[["output_tokens:modelmedium"]],
-                         large  = b[["output_tokens"]] + b[["output_tokens:modellarge"]]), 1)
+b = fit4.params
+ms_tok = {
+    "small": round(1000 * b["output_tokens"], 1),
+    "medium": round(1000 * (b["output_tokens"] + b["output_tokens:model[T.medium]"]), 1),
+    "large": round(1000 * (b["output_tokens"] + b["output_tokens:model[T.large]"]), 1),
+}
 ```
 
-- **זמן לכל טוקן בתשובה:** `r ms_tok[["small"]]` מילישניות במודל השפה הקטן, `r ms_tok[["medium"]]` בבינוני ו-`r ms_tok[["large"]]` בגדול (האמת בסימולציה: 10, 18 ו-30)
-- **`input_k`** מובהק עכשיו: `r round(b[["input_k"]], 2)` שניות לכל אלף טוקנים בקלט. במודלים הקודמים הוא "הוסתר" בגלל שגיאה גדולה ($\hat\sigma = 3.6$). עכשיו $\hat\sigma = `r round(sigma(fit4), 2)`$
+- **זמן לכל טוקן בתשובה:** `{python} ms_tok["small"]` מילישניות במודל השפה הקטן, `{python} ms_tok["medium"]` בבינוני ו-`{python} ms_tok["large"]` בגדול (האמת בסימולציה: 10, 18 ו-30)
+- **`input_k`** מובהק עכשיו: `{python} round(b["input_k"], 2)` שניות לכל אלף טוקנים בקלט. במודלים הקודמים הוא "הוסתר" בגלל שגיאה גדולה ($\hat\sigma = 3.6$). עכשיו $\hat\sigma = `{python} round(np.sqrt(fit4.mse_resid), 2)`$
 - **`modelmedium`, `modellarge`** לא מובהקים, אבל **לא מוחקים אותם**. כשיש אינטראקציה, הם ההפרש בין מודלי השפה כשאורך התשובה **אפס**, ולא "ההשפעה של גודל מודל השפה"
 - **כלל ההיררכיה:** אם אינטראקציה נמצאת במודל, משאירים בו גם את המשתנים שמרכיבים אותה
 
-```{r}
+```{python}
 #| label: partial-f-interaction
-anova(fit3, fit4)
+sm.stats.anova_lm(fit3, fit4)
 ```
 
 # בדיקת ההנחות ([Diagnostics]{.en})
 
 ## שאריות מול ערכים חזויים
 
-```{r}
+```{python}
 #| label: resid-plot
 #| output-location: slide
 #| fig-height: 4.2
-bind_rows(`בלי אינטראקציה (fit3)` = augment(fit3),
-          `עם אינטראקציה (fit4)`  = augment(fit4), .id = "fit") |>
-  ggplot(aes(.fitted, .resid, colour = model)) +
-  geom_hline(yintercept = 0, colour = nanas_pal[["grey"]]) +
-  geom_point(alpha = 0.6) +
-  facet_wrap(~ fit, scales = "free_y") +
-  scale_colour_manual(values = model_cols) +
-  labs(title = "השאריות חושפות את מה שהרגרסיה פספסה",
-       subtitle = "משמאל: דפוס ברור לפי גודל מודל השפה · מימין: ענן אקראי סביב אפס",
-       x = "Fitted value (s)", y = "Residual (s)", colour = NULL)
+fig, axes = plt.subplots(1, 2, figsize=(10, 4.2))
+for ax, fit, title in [(axes[0], fit3, "בלי אינטראקציה (fit3)"), (axes[1], fit4, "עם אינטראקציה (fit4)")]:
+    ax.axhline(0, color=nanas_pal["grey"])
+    for m, color in model_cols.items():
+        mask = (llm.model == m).to_numpy()
+        ax.scatter(fit.fittedvalues[mask], fit.resid[mask], alpha=0.6, color=color, label=m)
+    ax.set_title(title)
+    ax.set_xlabel("Fitted value (s)")
+axes[0].set_ylabel("Residual (s)")
+axes[1].legend()
+fig.suptitle("השאריות חושפות את מה שהרגרסיה פספסה\nמשמאל: דפוס ברור לפי גודל מודל השפה · מימין: ענן אקראי סביב אפס")
+plt.show()
 ```
 
 ## מה מחפשים בגרף השאריות {.smaller}
@@ -546,15 +583,15 @@ bind_rows(`בלי אינטראקציה (fit3)` = augment(fit3),
 
 ## שאריות מול התפלגות נורמלית
 
-```{r}
+```{python}
 #| label: qq-plot
 #| fig-height: 3.6
-ggplot(augment(fit4), aes(sample = .std.resid)) +
-  geom_abline(colour = nanas_pal[["grey"]], linetype = "dashed") +
-  stat_qq(colour = nanas_pal[["primary"]]) +
-  labs(title = "השאריות קרובות לנורמליות",
-       subtitle = "שאריות מתוקננות של fit4 מול הכמויות של N(0,1)",
-       x = "Theoretical quantile", y = "Standardised residual")
+std_resid = fit4.get_influence().resid_studentized_internal
+fig, ax = plt.subplots(figsize=(8, 3.6))
+sm.qqplot(std_resid, line="45", ax=ax, color=nanas_pal["primary"])
+ax.set_title("השאריות קרובות לנורמליות\nשאריות מתוקננות של fit4 מול הכמויות של N(0,1)", loc="right")
+ax.set_xlabel("Theoretical quantile"); ax.set_ylabel("Standardised residual")
+plt.show()
 ```
 
 ## מבחן [Kolmogorov–Smirnov]{.en} לשאריות {.smaller}
@@ -565,27 +602,30 @@ $$
 H_0: \text{השאריות המתוקננות מתפלגות } N(0, 1) \qquad D = \max_x \left| F_n(x) - \Phi(x) \right|
 $$
 
-```{r}
+```{python}
 #| label: ks-resid
-ks.test(rstandard(fit4), "pnorm")
+ks_resid = stats.kstest(std_resid, "norm")
+print(f"D = {ks_resid.statistic:.6g}, p-value = {ks_resid.pvalue:.6g}")
 ```
 
-- $D = `r round(ks.test(rstandard(fit4), "pnorm")$statistic, 3)` < `r round(1.36 / sqrt(nrow(llm)), 3)` \approx 1.36/\sqrt{`r nrow(llm)`}$, ולכן **לא דוחים** את $H_0$. אין עדות לסטייה מנורמליות
+- $D = `{python} round(ks_resid.statistic, 3)` < `{python} round(1.36 / np.sqrt(len(llm)), 3)` \approx 1.36/\sqrt{`{python} len(llm)`}$, ולכן **לא דוחים** את $H_0$. אין עדות לסטייה מנורמליות
 - **הסתייגות:** השאריות מחושבות מהמקדמים שאמדנו, ולכן ה-p-value רק בקירוב (כמו ב-KS עם פרמטרים אמודים). מבחן ייעודי לנורמליות הוא `shapiro.test()`
 - עם מדגם גדול מאוד, KS ידחה גם סטייה זניחה. עם מדגם קטן, הוא לא יזהה גם סטייה גדולה. לכן מסתכלים **גם** על הגרף
 
 ## מולטיקולינאריות ([Multicollinearity]{.en}) {.smaller}
 
-מספר המסמכים מ-RAG קובע כמעט לגמרי את מספר הטוקנים בקלט: המתאם ביניהם הוא `r round(cor(llm$rag_docs, llm$input_k), 2)`. מה קורה כשמכניסים את שניהם?
+מספר המסמכים מ-RAG קובע כמעט לגמרי את מספר הטוקנים בקלט: המתאם ביניהם הוא `{python} round(np.corrcoef(llm.rag_docs, llm.input_k)[0, 1], 2)`. מה קורה כשמכניסים את שניהם?
 
-```{r}
+```{python}
 #| label: collinearity
-fit5 <- lm(latency ~ input_k + rag_docs + output_tokens * model, data = llm)
-rbind(fit4 = coef(summary(fit4))["input_k", 1:2],
-      fit5 = coef(summary(fit5))["input_k", 1:2])
+fit5 = smf.ols("latency ~ input_k + rag_docs + output_tokens * model", data=llm).fit()
+pd.DataFrame({
+    "fit4": [fit4.params["input_k"], fit4.bse["input_k"]],
+    "fit5": [fit5.params["input_k"], fit5.bse["input_k"]],
+}, index=["Estimate", "Std. Error"]).T
 ```
 
-- שגיאת התקן של `input_k` גדלה פי `r round(coef(summary(fit5))["input_k", 2] / coef(summary(fit4))["input_k", 2], 1)`. הרגרסיה לא יכולה להפריד בין שני משתנים שזזים יחד
+- שגיאת התקן של `input_k` גדלה פי `{python} round(fit5.bse["input_k"] / fit4.bse["input_k"], 1)`. הרגרסיה לא יכולה להפריד בין שני משתנים שזזים יחד
 - המקדמים "לא יציבים": שינוי קטן בנתונים מזיז אותם הרבה. **החיזוי** כמעט לא נפגע. **הפרשנות** נפגעת
 
 **מדד VIF** ([Variance Inflation Factor]{.en}): $R_j^2$ הוא ה-$R^2$ של רגרסיה של $x_j$ על כל שאר המשתנים המסבירים.
@@ -594,9 +634,9 @@ $$
 VIF_j = \frac{1}{1 - R_j^2}
 $$
 
-```{r}
+```{python}
 #| label: vif
-r2_input <- summary(lm(input_k ~ rag_docs + output_tokens * model, data = llm))$r.squared
+r2_input = smf.ols("input_k ~ rag_docs + output_tokens * model", data=llm).fit().rsquared
 1 / (1 - r2_input)    # VIF of input_k. Rule of thumb: above 5-10 is a problem
 ```
 
@@ -614,18 +654,45 @@ r2_input <- summary(lm(input_k ~ rag_docs + output_tokens * model, data = llm))$
 
 **קריטריונים נפוצים:** $R^2_{adj}$, ה-p-value של מבחן F חלקי, או [AIC]{.en} (מדד שמאזן בין טיב ההתאמה למספר הפרמטרים. קטן יותר = טוב יותר)
 
-```{r}
+```{python}
 #| label: step
-fit_all  <- lm(latency ~ input_k + rag_docs + hour + output_tokens * model, data = llm)
-fit_step <- step(fit_all, direction = "both", trace = 0)   # stepwise by AIC
-formula(fit_step)
+# statsmodels has no built-in step(); a small bidirectional-by-AIC search, like R's step().
+def stepwise_aic(data, response, all_terms, start_terms):
+    def fit_of(terms):
+        rhs = " + ".join(terms) if terms else "1"
+        return smf.ols(f"{response} ~ {rhs}", data=data).fit()
+
+    current = list(start_terms)
+    current_aic = fit_of(current).aic
+    improved = True
+    while improved:
+        improved = False
+        candidates = []
+        for t in all_terms:
+            if t not in current:
+                candidates.append(("add", t, current + [t]))
+        for t in current:
+            candidates.append(("drop", t, [x for x in current if x != t]))
+        best = None
+        for action, term, terms in candidates:
+            aic = fit_of(terms).aic
+            if best is None or aic < best[0]:
+                best = (aic, action, term, terms)
+        if best is not None and best[0] < current_aic:
+            current_aic, _, _, current = best
+            improved = True
+    return fit_of(current), current
+
+all_terms = ["input_k", "rag_docs", "hour", "output_tokens", "C(model)", "output_tokens:C(model)"]
+fit_step, step_terms = stepwise_aic(llm, "latency", all_terms, all_terms)
+"latency ~ " + " + ".join(step_terms)
 ```
 
 ## מה יכול להשתבש בבחירה אוטומטית {.smaller}
 
-```{r}
+```{python}
 #| label: step-hour
-coef(summary(fit_step))["hour", ]
+fit_step.summary().tables[1].data  # includes `hour`'s row if the search kept it
 ```
 
 - `hour` **נשאר** במודל, אף שבסימולציה לשעה אין שום השפעה על זמן התגובה. ה-p-value שלו אפילו קרוב ל-0.05
@@ -656,30 +723,38 @@ $$
 
 2,000 טוקנים בקלט, 500 בפלט, מודל השפה הגדול:
 
-```{r}
+```{python}
 #| label: predict
-new_call <- tibble(input_k = 2, output_tokens = 500, model = "large")
-rbind(confidence = predict(fit4, new_call, interval = "confidence")[1, ],
-      prediction = predict(fit4, new_call, interval = "prediction")[1, ])
+new_call = pd.DataFrame({"input_k": [2], "output_tokens": [500],
+                          "model": pd.Categorical(["large"], categories=["small", "medium", "large"])})
+pred = fit4.get_prediction(new_call)
+conf = pred.conf_int(alpha=0.05)[0]       # CI for the mean
+pi = pred.conf_int(alpha=0.05, obs=True)[0]  # PI for a single new observation
+pd.DataFrame({"fit": [pred.predicted_mean[0]] * 2, "lwr": [conf[0], pi[0]], "upr": [conf[1], pi[1]]},
+             index=["confidence", "prediction"])
 ```
 
-- **בממוצע**, קריאות כאלה לוקחות בין `r round(predict(fit4, new_call, interval = "confidence")[2], 1)` ל-`r round(predict(fit4, new_call, interval = "confidence")[3], 1)` שניות
-- **קריאה בודדת** תיקח, ב-95% מהמקרים, בין `r round(predict(fit4, new_call, interval = "prediction")[2], 1)` ל-`r round(predict(fit4, new_call, interval = "prediction")[3], 1)` שניות. זה המספר שרלוונטי להתחייבות לזמן תגובה ([SLA]{.en})
+- **בממוצע**, קריאות כאלה לוקחות בין `{python} round(conf[0], 1)` ל-`{python} round(conf[1], 1)` שניות
+- **קריאה בודדת** תיקח, ב-95% מהמקרים, בין `{python} round(pi[0], 1)` ל-`{python} round(pi[1], 1)` שניות. זה המספר שרלוונטי להתחייבות לזמן תגובה ([SLA]{.en})
 
 ::: {.content-hidden when-format="revealjs"}
 **החישוב הידני** של רווח הסמך, עם המטריצה $X$ של `fit4`:
 
-```{r}
+```{python}
 #| label: predict-by-hand
-X4 <- model.matrix(fit4)
-x0 <- model.matrix(~ input_k + output_tokens * model,
-                   data = mutate(new_call, model = factor(model, levels(llm$model))))[1, ]
-h0 <- drop(t(x0) %*% solve(t(X4) %*% X4) %*% x0)        # x0' (X'X)^-1 x0
-y0 <- sum(x0 * coef(fit4))
-t_crit <- qt(0.975, df = fit4$df.residual)
-c(fit = y0, h0 = h0,
-  ci_half = t_crit * sigma(fit4) * sqrt(h0),
-  pi_half = t_crit * sigma(fit4) * sqrt(1 + h0))
+import patsy
+X4 = fit4.model.exog
+rhs = fit4.model.formula.split("~", 1)[1]
+x0 = patsy.dmatrix(rhs, new_call, return_type="dataframe")[fit4.params.index].to_numpy()[0]
+h0 = float(x0 @ np.linalg.inv(X4.T @ X4) @ x0)             # x0' (X'X)^-1 x0
+y0 = float(x0 @ fit4.params.to_numpy())
+t_crit = stats.t.ppf(0.975, df=fit4.df_resid)
+sigma_hat = np.sqrt(fit4.mse_resid)
+pd.Series({
+    "fit": y0, "h0": h0,
+    "ci_half": t_crit * sigma_hat * np.sqrt(h0),
+    "pi_half": t_crit * sigma_hat * np.sqrt(1 + h0),
+})
 ```
 
 $h_0$ קטן מאוד (יש 250 תצפיות, והנקודה לא רחוקה מהן), ולכן רווח החיזוי נקבע כמעט כולו על ידי $\hat\sigma$.
@@ -687,31 +762,30 @@ $h_0$ קטן מאוד (יש 250 תצפיות, והנקודה לא רחוקה מ�
 
 ## איך זה נראה
 
-```{r}
+```{python}
 #| label: ci-pi-plot
 #| output-location: slide
 #| fig-height: 4.2
-grid_cpu <- tibble(load = seq(8, 19, by = 0.1))
-bands <- bind_cols(grid_cpu,
-                   predict(fit_cpu, grid_cpu, interval = "confidence") |> as_tibble(),
-                   predict(fit_cpu, grid_cpu, interval = "prediction") |> as_tibble() |>
-                     select(pi_lwr = lwr, pi_upr = upr))
+grid_cpu = pd.DataFrame({"load": np.arange(8, 19.01, 0.1)})
+pred_cpu = fit_cpu.get_prediction(grid_cpu)
+ci = pred_cpu.conf_int(alpha=0.05)
+pi = pred_cpu.conf_int(alpha=0.05, obs=True)
 
-ggplot(bands, aes(load)) +
-  geom_ribbon(aes(ymin = pi_lwr, ymax = pi_upr), fill = nanas_pal[["sky"]], alpha = 0.25) +
-  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = nanas_pal[["primary"]], alpha = 0.35) +
-  geom_line(aes(y = fit), colour = nanas_pal[["primary"]], linewidth = 1) +
-  geom_point(aes(load, util), data = cpu, size = 2.5) +
-  labs(title = "רווח החיזוי רחב יותר מרווח הסמך, ושניהם מתרחבים בקצוות",
-       subtitle = "דוגמת המעבד · כהה: רווח סמך 95% לתוחלת · בהיר: רווח חיזוי 95% לתצפית בודדת",
-       x = "Load (k requests / min)", y = "CPU utilisation (%)")
+fig, ax = plt.subplots(figsize=(8, 4.2))
+ax.fill_between(grid_cpu.load, pi[:, 0], pi[:, 1], color=nanas_pal["sky"], alpha=0.25)
+ax.fill_between(grid_cpu.load, ci[:, 0], ci[:, 1], color=nanas_pal["primary"], alpha=0.35)
+ax.plot(grid_cpu.load, pred_cpu.predicted_mean, color=nanas_pal["primary"], linewidth=1)
+ax.scatter(cpu.load, cpu.util, s=25)
+ax.set_title("רווח החיזוי רחב יותר מרווח הסמך, ושניהם מתרחבים בקצוות\nדוגמת המעבד · כהה: רווח סמך 95% לתוחלת · בהיר: רווח חיזוי 95% לתצפית בודדת", loc="right")
+ax.set_xlabel("Load (k requests / min)"); ax.set_ylabel("CPU utilisation (%)")
+plt.show()
 ```
 
 # מה יכול להשתבש
 
 ## חמש מלכודות {.smaller}
 
-1. **אקסטרפולציה:** לפי מודל המעבד, ניצולת של 80% תגיע בעומס של כ-`r round((80 - coef(fit_cpu)[1]) / coef(fit_cpu)[2])` אלף בקשות בדקה. אבל מדדנו רק בין 10 ל-17. מעבדים בעומס גבוה מתנהגים אחרת (תורים, [throttling]{.en}), והמודל לא יודע על זה כלום
+1. **אקסטרפולציה:** לפי מודל המעבד, ניצולת של 80% תגיע בעומס של כ-`{python} round((80 - fit_cpu.params["Intercept"]) / fit_cpu.params["load"])` אלף בקשות בדקה. אבל מדדנו רק בין 10 ל-17. מעבדים בעומס גבוה מתנהגים אחרת (תורים, [throttling]{.en}), והמודל לא יודע על זה כלום
 2. **מתאם אינו סיבתיות:** נתוני הלוגים הם תצפיתיים. אם משתמשים בוחרים במודל השפה הגדול למשימות קשות, ייתכן שגם משהו אחר במשימות האלה מאט אותן. כדי לדעת בוודאות, צריך ניסוי (על כך בהרצאה על תכנון ניסויים)
 3. **$R^2$ גבוה אינו הוכחה:** הוא תמיד עולה כשמוסיפים משתנים. משווים מודלים לפי $R^2_{adj}$, מבחן F חלקי, או ביצועים על נתונים חדשים
 4. **מולטיקולינאריות:** מקדמים לא יציבים ושגיאות תקן גדולות, אף שהחיזוי בסדר
