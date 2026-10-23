@@ -13,7 +13,7 @@ format:
 #| include: false
 import sys
 sys.path.insert(0, "..")
-from py.setup import nanas_pal, apply_nanas_theme
+from py.setup import nanas_pal, apply_nanas_theme, show_original
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -59,7 +59,8 @@ bins = np.arange(gentoo.body_mass.min() // 100 * 100, gentoo.body_mass.max() + 2
 ax.hist(gentoo.body_mass, bins=bins, color=nanas_pal["grey"])
 ax.set_title("משקל הגוף של פינגווינים מסוג Gentoo\n119 פרטים, זכרים ונקבות יחד", loc="right")
 ax.set_xlabel("Body mass (g)"); ax.set_ylabel("Count")
-plt.show()
+plt.close(fig)
+show_original("01/penguins-hist-1.png")
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -84,7 +85,8 @@ for sex, color in sex_colors.items():
 ax.set_title("הזכרים כבדים בכ-800 גרם בממוצע\nהקווים המקווקווים: הממוצע בכל קבוצה", loc="right")
 ax.set_xlabel("Body mass (g)"); ax.set_ylabel("Count")
 ax.legend()
-plt.show()
+plt.close(fig)
+show_original("01/penguins-hist-sex-1.png")
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -184,7 +186,8 @@ ax.set_xscale("log")
 ax.set_title("החציון מתכנס ל-1, הממוצע ממשיך לטפס\nדגימות מהתפלגות שבה התוחלת אינסופית", loc="right")
 ax.set_xlabel("Sample size (log scale)")
 ax.legend()
-plt.show()
+plt.close(fig)
+show_original("01/running-mean-median-1.png")
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -222,7 +225,8 @@ ax.text(likert_mean - 1, counts_s.max(), f"ממוצע = {likert_mean:.1f}",
         color=nanas_pal["accent"], ha="center", va="top")
 ax.set_title("התשובות נוטות לקצוות", loc="right")
 ax.set_ylabel("Count")
-plt.show()
+plt.close(fig)
+show_original("01/likert-plot-1.png")
 ```
 :::
 
@@ -344,7 +348,8 @@ ax.set_ylim(-0.1, 0.1); ax.set_yticks([])
 ax.set_title("15 מתוך 20 בקשות מעל 200 ms", loc="right")
 ax.set_xlabel("Latency (ms)")
 ax.legend()
-plt.show()
+plt.close(fig)
+show_original("01/api-plot-1.png")
 ```
 
 ## מבחן הסימן: חישוב
@@ -699,7 +704,8 @@ ax.set_yticks([])
 ax.set_title("הדרגות של המדגם המאוחד", loc="right")
 ax.set_xlabel("Daily output (units)")
 ax.legend()
-plt.show()
+plt.close(fig)
+show_original("01/production-ranks-1.png")
 ```
 
 $$
@@ -832,7 +838,8 @@ ax.annotate(f"D = {gap[worst_i]:.3f}", (g[worst_i], (F0[worst_i] + gap_end[worst
             ha="left", va="center", bbox=dict(facecolor="white", edgecolor="none"))
 ax.set_title("יותר מדי פינגווינים קלים\nכחול: התפלגות אמפירית · מקווקו: נורמלית עם אותו ממוצע וסטיית תקן", loc="right")
 ax.set_xlabel("Body mass (g)"); ax.set_ylabel("F(x)")
-plt.show()
+plt.close(fig)
+show_original("01/ks-one-sample-plot-1.png")
 ```
 
 ## KS לשני מדגמים
@@ -888,7 +895,8 @@ ax.set_xscale("log")
 ax.set_title("אותו חציון, פיזור שונה לגמרי\nהקו השחור: המרחק הגדול ביותר בין שתי הפונקציות", loc="right")
 ax.set_xlabel("Response time (ms, log scale)"); ax.set_ylabel("F(x)")
 ax.legend()
-plt.show()
+plt.close(fig)
+show_original("01/ks-ecdf-plot-1.png")
 ```
 
 ## KS מול סכום הדירוגים
@@ -1008,7 +1016,8 @@ for ax, (x, y) in zip(axes, panels):
     ax.set_title(f"r = {r:.2f}")
     ax.set_xticks([]); ax.set_yticks([])
 fig.suptitle("מה r מודד: עד כמה הנקודות קרובות לקו ישר\nבפאנל הימני הקשר חזק מאוד, אבל לא לינארי, ולכן r קרוב לאפס")
-plt.show()
+plt.close(fig)
+show_original("01/pearson-gallery-1.png")
 ```
 :::
 
@@ -1155,7 +1164,8 @@ ax.annotate("שגיאת הקלדה", (3.5, 160), ha="left")
 ax.set_title("Pearson = {pearson:.2f} · Spearman = {spearman:.2f} · Kendall = {kendall:.2f}\nקשר מונוטוני ברור, עם תצפית חריגה אחת".format(**corr_stats),
              loc="right")
 ax.set_xlabel("x"); ax.set_ylabel("y")
-plt.show()
+plt.close(fig)
+show_original("01/corr-sim-1.png")
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -1194,7 +1204,8 @@ ax.set_xticks(range(5)); ax.set_xticklabels(likert_levels, rotation=30, ha="righ
 ax.set_yticks(range(5)); ax.set_yticklabels(likert_levels)
 ax.set_title("מי שאוהב סטטיסטיקה נוטה לאהוב ספרות פחות\nמספר המשיבים בכל צירוף תשובות", loc="right")
 ax.set_xlabel("Liking statistics"); ax.set_ylabel("Liking literature")
-plt.show()
+plt.close(fig)
+show_original("01/likert-corr-data-1.png")
 ```
 
 ::: {.content-hidden when-format="revealjs"}
@@ -1271,7 +1282,8 @@ ax.set_yticks([1, 4, 8, 12, 16])
 ax.set_title("הדירוג של ארגנטינה במונדיאלים, 1930–2022\n×: לא השתתפה או לא הגיעה ל-16 הגדולות", loc="right")
 ax.set_xlabel("Year"); ax.set_ylabel("Final rank")
 ax.legend()
-plt.show()
+plt.close(fig)
+show_original("01/argentina-plot-1.png")
 ```
 
 ## השאלות {.smaller}

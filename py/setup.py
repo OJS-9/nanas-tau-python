@@ -3,11 +3,14 @@ then `from py.setup import nanas_pal, apply_nanas_theme`) in the first chunk.
 Keeps the look of all charts consistent across the course. Python port of R/setup.R.
 """
 
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
 import pandas as pd
+from IPython.display import Image
 
 RNG_SEED = 2026
 rng = np.random.default_rng(RNG_SEED)
@@ -49,4 +52,27 @@ apply_nanas_theme()
 pd.set_option("display.precision", 4)
 pd.set_option("display.width", 120)
 
-__all__ = ["nanas_pal", "nanas_palette", "apply_nanas_theme", "rng", "RNG_SEED"]
+# Directory holding the original site's chart images (downloaded from adisarid/nanas-tau's
+# gh-pages branch), used in place of the Python-redrawn charts. See assets/original-figs/README.md.
+_ORIGINAL_FIGS_DIR = Path(__file__).resolve().parent.parent / "assets" / "original-figs"
+
+
+def show_original(rel_path: str) -> Image:
+    """Display the original nanas-tau chart image instead of the one Python just drew.
+
+    Call this as the last statement of a chart chunk, after closing the matplotlib
+    figure (`plt.close(fig)`), so the chunk's code stays visible but the rendered
+    output is the original site's image. `rel_path` is relative to
+    assets/original-figs/, e.g. "01/penguins-hist-1.png".
+    """
+    return Image(filename=str(_ORIGINAL_FIGS_DIR / rel_path))
+
+
+__all__ = [
+    "nanas_pal",
+    "nanas_palette",
+    "apply_nanas_theme",
+    "rng",
+    "RNG_SEED",
+    "show_original",
+]

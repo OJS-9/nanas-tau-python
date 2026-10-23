@@ -13,7 +13,7 @@ format:
 #| include: false
 import sys
 sys.path.insert(0, "..")
-from py.setup import nanas_pal, apply_nanas_theme
+from py.setup import nanas_pal, apply_nanas_theme, show_original
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -62,7 +62,8 @@ ax.plot(xs, b0 + b1 * xs, color=nanas_pal["grey"], linewidth=0.8)
 ax.scatter(cpu.load, cpu.util, s=40, color=nanas_pal["primary"])
 ax.set_title("ככל שהעומס עולה, המעבד עובד קשה יותר\nעשרה חלונות זמן · הקו: קו הריבועים הפחותים", loc="right")
 ax.set_xlabel("Load (k requests / min)"); ax.set_ylabel("CPU utilisation (%)")
-plt.show()
+plt.close(fig)
+show_original("03/cpu-plot-1.png")
 ```
 
 ## המודל {.smaller}
@@ -256,7 +257,8 @@ for m, color in model_cols.items():
 ax.set_title("תשובה ארוכה יותר, המתנה ארוכה יותר\nוכל מודל שפה עם שיפוע משלו", loc="right")
 ax.set_xlabel("Output tokens"); ax.set_ylabel("Latency (s)")
 ax.legend()
-plt.show()
+plt.close(fig)
+show_original("03/llm-plot-1.png")
 ```
 
 ## המודל {.smaller}
@@ -495,7 +497,8 @@ for m, color in model_cols.items():
 ax.set_title("קווים מקבילים לא מתאימים לנתונים\nהקווים: החיזוי של רגרסיה בלי אינטראקציה (בממוצע הקלט)", loc="right")
 ax.set_xlabel("Output tokens"); ax.set_ylabel("Latency (s)")
 ax.legend()
-plt.show()
+plt.close(fig)
+show_original("03/parallel-lines-1.png")
 ```
 
 ## מודל עם אינטראקציה {.smaller}
@@ -563,7 +566,8 @@ for ax, fit, title in [(axes[0], fit3, "בלי אינטראקציה (fit3)"), (a
 axes[0].set_ylabel("Residual (s)")
 axes[1].legend()
 fig.suptitle("השאריות חושפות את מה שהרגרסיה פספסה\nמשמאל: דפוס ברור לפי גודל מודל השפה · מימין: ענן אקראי סביב אפס")
-plt.show()
+plt.close(fig)
+show_original("03/resid-plot-1.png")
 ```
 
 ## מה מחפשים בגרף השאריות {.smaller}
@@ -591,7 +595,8 @@ fig, ax = plt.subplots(figsize=(8, 3.6))
 sm.qqplot(std_resid, line="45", ax=ax, color=nanas_pal["primary"])
 ax.set_title("השאריות קרובות לנורמליות\nשאריות מתוקננות של fit4 מול הכמויות של N(0,1)", loc="right")
 ax.set_xlabel("Theoretical quantile"); ax.set_ylabel("Standardised residual")
-plt.show()
+plt.close(fig)
+show_original("03/qq-plot-1.png")
 ```
 
 ## מבחן [Kolmogorov–Smirnov]{.en} לשאריות {.smaller}
@@ -778,7 +783,8 @@ ax.plot(grid_cpu.load, pred_cpu.predicted_mean, color=nanas_pal["primary"], line
 ax.scatter(cpu.load, cpu.util, s=25)
 ax.set_title("רווח החיזוי רחב יותר מרווח הסמך, ושניהם מתרחבים בקצוות\nדוגמת המעבד · כהה: רווח סמך 95% לתוחלת · בהיר: רווח חיזוי 95% לתצפית בודדת", loc="right")
 ax.set_xlabel("Load (k requests / min)"); ax.set_ylabel("CPU utilisation (%)")
-plt.show()
+plt.close(fig)
+show_original("03/ci-pi-plot-1.png")
 ```
 
 # מה יכול להשתבש
