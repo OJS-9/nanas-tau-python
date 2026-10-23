@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="he" xml:lang="he" dir="rtl"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="ד״ר עדי שריד">
+
+<title>0. פתיחה: על הקורס – ניתוח נתונים סטטיסטי</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3cd6efbe53e1d6dc8adc2a2939033fbf.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-fe45f9c9855a37e14af901611545c445.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3cd6efbe53e1d6dc8adc2a2939033fbf.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-97d489a77bc7dfe97cda1aba167d7fa7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-8e239ecadcc22d59579652db6a32cf24.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-97d489a77bc7dfe97cda1aba167d7fa7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "אין תוצאות",
+    "search-matching-documents-text": "מסמכים תואמים",
+    "search-copy-link-title": "העתק קישור לחיפוש",
+    "search-hide-matches-text": "הסתר התאמות נוספות",
+    "search-more-match-text": "התאמה נוספת במסמך זה",
+    "search-more-matches-text": "התאמות נוספות במסמך זה",
+    "search-clear-button-title": "נקה",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "בטל",
+    "search-submit-button-title": "שלח",
+    "search-label": "חפש"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">ניתוח נתונים סטטיסטי</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="חפש"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="הצג/הסתר ניווט" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">בית</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">הרצאות</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-">    
+        <li>
+    <a class="dropdown-item" href="../lectures.html">
+ <span class="dropdown-text">כל ההרצאות</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../lectures/00-course-intro.html">
+ <span class="dropdown-text">0. פתיחה: על הקורס</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../lectures/01-nonparametric.html">
+ <span class="dropdown-text">1. שיטות א-פרמטריות</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../lectures/03-multiple-regression.html">
+ <span class="dropdown-text">3. רגרסיה לינארית מרובה</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../syllabus.html"> 
+<span class="menu-text">סילבוס</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://moodle.tau.ac.il/course/view.php?id=571313701" target="_blank"> 
+<span class="menu-text">Moodle</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/OJS-9/nanas-tau-python"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="הצג/הסתר מצב חשוך"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">בעמוד זה</h2>
+   
+  <ul>
+  <li><a href="#ברוכים-הבאים" id="toc-ברוכים-הבאים" class="nav-link active" data-scroll-target="#ברוכים-הבאים">ברוכים הבאים</a></li>
+  <li><a href="#למה-הקורס-הזה" id="toc-למה-הקורס-הזה" class="nav-link" data-scroll-target="#למה-הקורס-הזה">למה הקורס הזה?</a></li>
+  <li><a href="#מה-תדעו-לעשות-בסוף-הקורס" id="toc-מה-תדעו-לעשות-בסוף-הקורס" class="nav-link" data-scroll-target="#מה-תדעו-לעשות-בסוף-הקורס">מה תדעו לעשות בסוף הקורס</a></li>
+  <li><a href="#תוכנית-הקורס" id="toc-תוכנית-הקורס" class="nav-link" data-scroll-target="#תוכנית-הקורס">תוכנית הקורס</a></li>
+  <li><a href="#הודעה-ההרצאה-השנייה-מבוטלת" id="toc-הודעה-ההרצאה-השנייה-מבוטלת" class="nav-link" data-scroll-target="#הודעה-ההרצאה-השנייה-מבוטלת">הודעה: ההרצאה השנייה מבוטלת</a></li>
+  <li><a href="#חומרי-הקורס-איפה-הכול-נמצא" id="toc-חומרי-הקורס-איפה-הכול-נמצא" class="nav-link" data-scroll-target="#חומרי-הקורס-איפה-הכול-נמצא">חומרי הקורס: איפה הכול נמצא</a></li>
+  <li><a href="#מה-זה-github-ולמה-זה-מעניין-אתכם" id="toc-מה-זה-github-ולמה-זה-מעניין-אתכם" class="nav-link" data-scroll-target="#מה-זה-github-ולמה-זה-מעניין-אתכם">מה זה GitHub, ולמה זה מעניין אתכם</a></li>
+  <li><a href="#איך-משיגים-את-כל-החומרים" id="toc-איך-משיגים-את-כל-החומרים" class="nav-link" data-scroll-target="#איך-משיגים-את-כל-החומרים">איך משיגים את כל החומרים</a></li>
+  <li><a href="#סביבת-עבודה" id="toc-סביבת-עבודה" class="nav-link" data-scroll-target="#סביבת-עבודה">סביבת עבודה</a></li>
+  <li><a href="#הרכב-הציון" id="toc-הרכב-הציון" class="nav-link" data-scroll-target="#הרכב-הציון">הרכב הציון</a></li>
+  <li><a href="#למה-הפרויקט-חשוב-יותר-מ-15" id="toc-למה-הפרויקט-חשוב-יותר-מ-15" class="nav-link" data-scroll-target="#למה-הפרויקט-חשוב-יותר-מ-15">למה הפרויקט חשוב (יותר מ-15%)</a></li>
+  <li><a href="#שעות-קבלה-ויצירת-קשר" id="toc-שעות-קבלה-ויצירת-קשר" class="nav-link" data-scroll-target="#שעות-קבלה-ויצירת-קשר">שעות קבלה ויצירת קשר</a></li>
+  <li><a href="#כללי-התנהלות" id="toc-כללי-התנהלות" class="nav-link" data-scroll-target="#כללי-התנהלות">כללי התנהלות</a></li>
+  <li><a href="#שאלות" id="toc-שאלות" class="nav-link" data-scroll-target="#שאלות">שאלות?</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/OJS-9/nanas-tau-python/blob/main/lectures/00-course-intro.qmd" class="toc-action"><i class="bi bi-github"></i>הצג מקור</a></li><li><a href="https://github.com/OJS-9/nanas-tau-python/issues/new" class="toc-action"><i class="bi empty"></i>דווח על בעיה</a></li></ul></div><div class="quarto-alternate-formats"><h2>תבניות אחרות</h2><ul><li><a href="00-course-intro-slides.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">0. פתיחה: על הקורס</h1>
+<p class="subtitle lead">ניתוח נתונים סטטיסטי · מפגש ראשון</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">כותב</div>
+    <div class="quarto-title-meta-contents">
+             <p>ד״ר עדי שריד </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">פורסם</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">23 באוקטובר 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="ברוכים-הבאים" class="level2">
+<h2 class="anchored" data-anchor-id="ברוכים-הבאים">ברוכים הבאים</h2>
+<p><strong>ניתוח נתונים סטטיסטי</strong> (0571-3137)<br>
+הפקולטה להנדסה, אוניברסיטת תל אביב · סמסטר א׳ תשפ״ז</p>
+<table class="caption-top table">
+<tbody>
+<tr class="odd">
+<td><strong>הרצאה</strong></td>
+<td>ד״ר עדי שריד · יום ב׳ 09:00–12:00 · סמואלי הנדסה, חדר 001</td>
+</tr>
+<tr class="even">
+<td><strong>תרגול</strong></td>
+<td>גב׳ אביטל שמיר · יום ד׳ 14:30–15:30 (קבוצה 02) או 15:30–16:30 (קבוצה 03)</td>
+</tr>
+<tr class="odd">
+<td><strong>אתר הקורס</strong></td>
+<td><a href="https://adisarid.github.io/nanas-tau/" class="uri">https://adisarid.github.io/nanas-tau/</a></td>
+</tr>
+<tr class="even">
+<td><strong>Moodle</strong></td>
+<td><a href="https://moodle.tau.ac.il/course/view.php?id=571313701">הודעות, תרגילי בית והגשות</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="למה-הקורס-הזה" class="level2">
+<h2 class="anchored" data-anchor-id="למה-הקורס-הזה">למה הקורס הזה?</h2>
+<ul>
+<li>כמעט כל החלטה בתעשייה ובשירותים נשענת היום על נתונים, ואתם תהיו אלה שמנתחים אותם</li>
+<li>הסטטיסטיקה שלמדתם עד עכשיו היא הבסיס לכל מה שנלמד בקורס. כאן נעבור ל<strong>מודלים</strong>: הרבה משתנים, הרבה קבוצות וניסויים מתוכננים</li>
+<li>כלי AI כותבים היום קוד ניתוח בשניות. מה שנשאר בידיים שלכם הוא <strong>שיקול הדעת</strong>:
+<ul>
+<li>איזו שיטה מתאימה לשאלה ולנתונים</li>
+<li>האם ההנחות שלה מתקיימות</li>
+<li>מה הפלט אומר, ומה הוא <strong>לא</strong> אומר</li>
+<li>איפה הניתוח (שלכם, של עמית או של מודל שפה) שגוי</li>
+</ul></li>
+</ul>
+</section>
+<section id="מה-תדעו-לעשות-בסוף-הקורס" class="level2">
+<h2 class="anchored" data-anchor-id="מה-תדעו-לעשות-בסוף-הקורס">מה תדעו לעשות בסוף הקורס</h2>
+<ol type="1">
+<li>לבחור שיטה סטטיסטית מתאימה לשאלת מחקר ולסוג הנתונים</li>
+<li>לבדוק את ההנחות של השיטה, ולדעת מה עושים כשהן לא מתקיימות</li>
+<li>להריץ את הניתוח ב-Python (או ב-R) ולקרוא את הפלט</li>
+<li>לתכנן ניסוי כך שהנתונים יענו על השאלה</li>
+<li>לפרש תוצאות ולהציג אותן למי שמקבל את ההחלטה</li>
+</ol>
+</section>
+<section id="תוכנית-הקורס" class="level2">
+<h2 class="anchored" data-anchor-id="תוכנית-הקורס">תוכנית הקורס</h2>
+<div class="small">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>#</th>
+<th>הרצאה</th>
+<th>תרגול</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>שיטות א-פרמטריות</td>
+<td>שיטות א-פרמטריות</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><strong>תידחה</strong>, ראו בשקף הבא</td>
+<td>חזרה על התפלגויות</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>רגרסיה לינארית מרובה</td>
+<td>רגרסיה פשוטה ומרובה</td>
+</tr>
+<tr class="even">
+<td>4–6</td>
+<td>ניתוח שונות (ANOVA): חד-כיווני, ניגודים, רב-כיווני</td>
+<td>בהתאם</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>תכנון ניסויים</td>
+<td>בהתאם</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>רגרסיה לוגיסטית</td>
+<td>בהתאם</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>ניתוח גורמים ראשיים (PCA)</td>
+<td>בהתאם</td>
+</tr>
+<tr class="even">
+<td>10–11</td>
+<td>סדרות עתיות וחיזוי</td>
+<td>בהתאם</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>שיעור השלמה</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>חזרה לבחינה</td>
+<td>בהתאם</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>נושאים נוספים אופציונליים לתרגול (מותנה בהספק): ויז׳ואליזציות, git, ומבדק ידע על הפרויקט.</p>
+<div class="small muted">
+<p>התוכנית עשויה להשתנות. העדכונים יופיעו באתר וב-Moodle.</p>
+</div>
+</section>
+<section id="הודעה-ההרצאה-השנייה-מבוטלת" class="level2">
+<h2 class="anchored" data-anchor-id="הודעה-ההרצאה-השנייה-מבוטלת">הודעה: ההרצאה השנייה מבוטלת</h2>
+<ul>
+<li>בשבוע השני אהיה בחו״ל, ולכן <strong>ההרצאה השנייה לא תתקיים</strong></li>
+<li><strong>התרגול באותו שבוע מתקיים כרגיל</strong> (חזרה על התפלגויות)</li>
+<li>תתקיים הרצאת השלמה. <strong>המועד יפורסם ב-Moodle</strong></li>
+</ul>
+</section>
+<section id="חומרי-הקורס-איפה-הכול-נמצא" class="level2">
+<h2 class="anchored" data-anchor-id="חומרי-הקורס-איפה-הכול-נמצא">חומרי הקורס: איפה הכול נמצא</h2>
+<ul>
+<li><strong>אתר הקורס</strong> (<a href="https://adisarid.github.io/nanas-tau/" class="uri">https://adisarid.github.io/nanas-tau/</a>) הוא המקום המרכזי לחומרים, ויש אליו קישור גם מ-Moodle</li>
+<li>לכל הרצאה יש:
+<ul>
+<li><strong>מצגת</strong>, שבה אני משתמש בכיתה</li>
+<li><strong>דף סיכום</strong> לקריאה, עם ההסברים המלאים וכל הקוד</li>
+</ul></li>
+<li><strong>Moodle</strong> משמש להודעות, לתרגילי בית ולהגשות</li>
+</ul>
+<p>ההבדל בין המצגת לדף הסיכום: המצגת מקוצרת, ודף הסיכום מכיל הסברים מורחבים, טבלאות מלאות ופתרונות. כדאי לקרוא את דף הסיכום אחרי כל הרצאה. הקישור למצגת נמצא בצד הדף, תחת “פורמטים נוספים”.</p>
+</section>
+<section id="מה-זה-github-ולמה-זה-מעניין-אתכם" class="level2">
+<h2 class="anchored" data-anchor-id="מה-זה-github-ולמה-זה-מעניין-אתכם">מה זה GitHub, ולמה זה מעניין אתכם</h2>
+<ul>
+<li>כל חומרי הקורס מנוהלים ב-<strong><a href="https://github.com/adisarid/nanas-tau">GitHub</a></strong>, פלטפורמה לניהול קוד וגרסאות</li>
+<li>המאגר (<span class="en">repository</span>) פתוח לכולם:
+<ul>
+<li>כל הקוד שמייצר את התרשימים והניתוחים בהרצאות</li>
+<li>קובצי הנתונים (תיקיית <code>data/</code>)</li>
+<li>ההיסטוריה של כל שינוי</li>
+</ul></li>
+<li>זה גם הכלי שבו עובדים צוותי Data ופיתוח בתעשייה. כדאי להכיר אותו כבר עכשיו</li>
+</ul>
+</section>
+<section id="איך-משיגים-את-כל-החומרים" class="level2">
+<h2 class="anchored" data-anchor-id="איך-משיגים-את-כל-החומרים">איך משיגים את כל החומרים</h2>
+<p><strong>הדרך הפשוטה:</strong> באתר הקורס, דרך תפריט “הרצאות”.</p>
+<p><strong>כדי להריץ את הקוד בעצמכם:</strong></p>
+<ol type="1">
+<li>נכנסים ל-<a href="https://github.com/adisarid/nanas-tau" class="uri">https://github.com/adisarid/nanas-tau</a></li>
+<li>לוחצים על <strong>Code</strong> ואז על <strong>Download ZIP</strong></li>
+<li>פותחים את התיקייה ב-IDE ומריצים</li>
+</ol>
+<p><strong>למי שמכיר git:</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/adisarid/nanas-tau.git</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>ואחר כך <code>git pull</code> אחרי כל הרצאה, כדי לקבל את העדכונים.</p>
+<p><strong>מצאתם טעות?</strong> בכל עמוד באתר יש קישור “דווח על בעיה” שפותח <span class="en">issue</span> ב-GitHub. אפשר גם לכתוב לי במייל.</p>
+</section>
+<section id="סביבת-עבודה" class="level2">
+<h2 class="anchored" data-anchor-id="סביבת-עבודה">סביבת עבודה</h2>
+<ul>
+<li><strong>שפה:</strong> R או Python, לבחירתכם. הדוגמאות בהרצאות כתובות ב-Python</li>
+<li><strong>סביבת עבודה (IDE):</strong>
+<ul>
+<li><a href="https://code.visualstudio.com/">VS Code</a>: המועדפת עליי</li>
+<li><a href="https://positron.posit.co/">Positron</a></li>
+<li><a href="https://posit.co/download/rstudio-desktop/">RStudio</a></li>
+</ul></li>
+<li>כדאי להתקין לפני ההרצאה הבאה ולוודא שאפשר להריץ קוד מהאתר</li>
+</ul>
+</section>
+<section id="הרכב-הציון" class="level2">
+<h2 class="anchored" data-anchor-id="הרכב-הציון">הרכב הציון</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>רכיב</th>
+<th>משקל</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>בחינה סופית</strong></td>
+<td><strong>85%</strong></td>
+</tr>
+<tr class="even">
+<td><strong>פרויקט</strong> (בקבוצות)</td>
+<td><strong>15%</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>הבחינה:</strong> שלוש שעות. מותר מחשבון לא גרפי ודף נוסחאות שהכנתם בעצמכם (עד 10 עמודים, או 15 למי שזכאי/ת להתאמות)</li>
+<li><strong>תרגילי הבית</strong> לא נכנסים לציון, אבל הם ההכנה הטובה ביותר לבחינה</li>
+</ul>
+</section>
+<section id="למה-הפרויקט-חשוב-יותר-מ-15" class="level2">
+<h2 class="anchored" data-anchor-id="למה-הפרויקט-חשוב-יותר-מ-15">למה הפרויקט חשוב (יותר מ-15%)</h2>
+<ul>
+<li>זה המקום היחיד בקורס שבו תעבדו על <strong>נתונים אמיתיים</strong> מההתחלה עד הסוף:
+<ul>
+<li>מנסחים שאלה</li>
+<li>בוחרים שיטה</li>
+<li>בודקים הנחות</li>
+<li>מנתחים</li>
+<li>מציגים</li>
+</ul></li>
+<li>זה בדיוק מה שתעשו בעבודה. הבחינה בודקת אם אתם יודעים את השיטות, והפרויקט בודק אם אתם יודעים <strong>להשתמש</strong> בהן</li>
+<li>עבודה בקבוצה, עם קוד והצגה של התוצאות</li>
+<li>הנחיות מלאות, לוחות זמנים ומדיניות שימוש בכלי AI יפורסמו ב-Moodle</li>
+</ul>
+</section>
+<section id="שעות-קבלה-ויצירת-קשר" class="level2">
+<h2 class="anchored" data-anchor-id="שעות-קבלה-ויצירת-קשר">שעות קבלה ויצירת קשר</h2>
+<ul>
+<li><strong>שעות קבלה בתיאום מראש.</strong> כתבו לי למייל ונקבע זמן, בזום או פנים אל פנים</li>
+<li><strong>מייל:</strong> <a href="mailto:adi@sarid-ins.co.il">adi@sarid-ins.co.il</a></li>
+<li>כדי שהמייל לא ילך לאיבוד, כתבו בשורת הנושא <strong>“ננס:”</strong> ואחריה הנושא</li>
+<li>שאלות על התרגול ועל תרגילי הבית: לאביטל, בתרגול או בערוצים שתפרסם</li>
+<li>שאלות שרלוונטיות לכולם: עדיף בפורום ב-Moodle, כדי שכולם ייהנו מהתשובה</li>
+</ul>
+</section>
+<section id="כללי-התנהלות" class="level2">
+<h2 class="anchored" data-anchor-id="כללי-התנהלות">כללי התנהלות</h2>
+<ul>
+<li><strong>שאלו.</strong> אין שאלות טיפשיות, ואם משהו לא ברור לכם, כנראה שהוא לא ברור גם לאחרים</li>
+<li><strong>הריצו את הקוד.</strong> לקרוא קוד זה לא כמו להריץ אותו. שנו פרמטרים, שברו דברים ותראו מה קורה</li>
+<li><strong>כלי AI</strong> הם חלק מהעבודה המודרנית, והם ישתלבו בקורס. אבל בבחינה אתם לבד, עם דף נוסחאות ומחשבון. ודאו שאתם מבינים כל שורה שהכלי כתב בשבילכם</li>
+<li><strong>עדכונים</strong> מתפרסמים ב-Moodle. ודאו שההתראות אצלכם פעילות</li>
+</ul>
+</section>
+<section id="שאלות" class="level2">
+<h2 class="anchored" data-anchor-id="שאלות">שאלות?</h2>
+<p><a href="https://adisarid.github.io/nanas-tau/" class="uri">https://adisarid.github.io/nanas-tau/</a></p>
+<p><a href="mailto:adi@sarid-ins.co.il">adi@sarid-ins.co.il</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "הועתק!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "הועתק!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/OJS-9\.github\.io\/nanas-tau-python\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>גרסת Python לא רשמית של אתר הקורס של ד״ר עדי שריד · <a href="https://adisarid.github.io/nanas-tau/">האתר המקורי</a></p>
+</div>   
+    <div class="nav-footer-center">
+<p>ד״ר עדי שריד · הפקולטה להנדסה, אוניברסיטת תל אביב · תשפ״ז</p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/OJS-9/nanas-tau-python/blob/main/lectures/00-course-intro.qmd" class="toc-action"><i class="bi bi-github"></i>הצג מקור</a></li><li><a href="https://github.com/OJS-9/nanas-tau-python/issues/new" class="toc-action"><i class="bi empty"></i>דווח על בעיה</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>עודכן לאחרונה: 19.10.2026</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
