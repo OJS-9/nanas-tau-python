@@ -9,7 +9,7 @@ Course materials for **TAU 0571-3137, Statistical Data Analysis**, Faculty of En
 - **Grading:** project 15%, final exam 85% (3h exam, self-prepared formula sheet of up to 10 pages)
 - **[Moodle](https://moodle.tau.ac.il/course/view.php?id=571313701)** handles announcements, homework and submissions. This repo is for lecture content only.
 
-The materials build on Ohad's earlier version of the course (PowerPoint decks), rewritten from scratch. The aim is a modern look, real-world examples drawn from industry and AI practice, and every chart and computation shown in **R** code.
+The materials build on Ohad's earlier version of the course (PowerPoint decks), rewritten from scratch. The aim is a modern look, real-world examples drawn from industry and AI practice, and every chart and computation shown in **Python** code.
 
 ---
 
@@ -23,9 +23,9 @@ Read this section before you edit anything.
 |---|---|
 | Site | Quarto website (`_quarto.yml`), deployed to GitHub Pages (`gh-pages` branch) |
 | Lectures | One `.qmd` per lecture in `lectures/`. Each one renders as a notes page (`html`) **and** a slide deck (`revealjs`) |
-| Code | R only (tidyverse + ggplot2). Packages pinned in `renv.lock` |
+| Code | Python only (pandas, numpy, scipy, statsmodels, matplotlib/seaborn). Packages pinned in `requirements.txt` |
 | Language | Hebrew, RTL (`lang: he`, `dir: rtl`). English technical terms in parentheses on first use |
-| CI | `.github/workflows/publish.yml` renders **without R**, using the committed `_freeze/` |
+| CI | `.github/workflows/publish.yml` renders **without re-executing Python**, using the committed `_freeze/` |
 
 ### Repo map
 
@@ -38,14 +38,14 @@ lectures/
   _metadata.yml           shared html + revealjs formats for every lecture
   NN-slug.qmd             one lecture → NN-slug.html + NN-slug-slides.html
   pdf/NN-slug-slides.pdf  printable slide PDF. COMMITTED, made by scripts/slides-pdf.sh
-R/setup.R                 shared ggplot theme (theme_nanas), palette (nanas_pal), seed
+py/setup.py               shared matplotlib/seaborn theme (apply_nanas_theme), palette (nanas_pal), seed
 assets/styles.scss        site theme (Heebo font, RTL fixes for code/figures)
 assets/slides.scss        slide theme (RTL, title slide)
 _templates/               lecture-template.qmd. Not rendered (leading underscore)
 scripts/slides-pdf.sh     exports rendered decks to lectures/pdf/ (decktape + local Chrome)
 data/                     course datasets + data/README.md (source & licence per file)
 _freeze/                  COMMITTED computation cache. CI depends on it
-renv/, renv.lock          R package environment
+requirements.txt          Python package list (installed into .venv via uv)
 ```
 
 ### Adding a lecture
@@ -59,12 +59,12 @@ renv/, renv.lock          R package environment
 
 ### Before every push to `main`
 
-Go through this checklist every time. CI only republishes what is committed: it doesn't run R and has no browser.
+Go through this checklist every time. CI only republishes what is committed: it doesn't execute Python and has no browser.
 
 1. **Render** what changed: `quarto render lectures/NN-slug.qmd`, or `quarto render` for everything.
 2. **Regenerate the slide PDFs** for every lecture whose slides changed: `scripts/slides-pdf.sh lectures/NN-slug.qmd`.
    - Lectures changed since the last push: `git diff --name-only origin/main -- 'lectures/*.qmd'`.
-   - If shared slide styling or setup changed (`assets/slides.scss`, `assets/mathjax-slides.html`, `lectures/_metadata.yml`, `R/setup.R`), regenerate **all** of them: `quarto render && scripts/slides-pdf.sh`.
+   - If shared slide styling or setup changed (`assets/slides.scss`, `assets/mathjax-slides.html`, `lectures/_metadata.yml`, `py/setup.py`), regenerate **all** of them: `quarto render && scripts/slides-pdf.sh`.
    - A forgotten PDF fails silently: the site keeps serving the old one. Don't skip this step.
 3. **Update the last-updated date** in the site footer: `website.page-footer.right` in `_quarto.yml` (`עודכן לאחרונה: DD.MM.YYYY`). Set it to the push date.
 4. **Commit together:** the `.qmd`, its `_freeze/lectures/NN-slug/` folder, `lectures/pdf/NN-slug-slides.pdf` and `_quarto.yml`.
@@ -76,9 +76,9 @@ Go through this checklist every time. CI only republishes what is committed: it 
   - Content that should appear only in the slides goes in `::: {.content-visible when-format="revealjs"}`.
   - Speaker notes go in `::: notes`.
 - **Dense slides:** add `{.smaller}` to the `##` heading. Put a chart chunk's output on its own slide with `#| output-location: slide`, so the code doesn't squeeze it.
-- **First chunk** of every lecture: `source("../R/setup.R")` with `include: false`.
+- **First chunk** of every lecture: `sys.path.insert(0, "..")` then `from py.setup import nanas_pal, apply_nanas_theme` with `include: false`.
 - **Charts:**
-  - Use ggplot2 with the default `theme_nanas()`.
+  - Use matplotlib/seaborn with the course theme (`apply_nanas_theme()`, applied automatically by `py/setup.py`).
   - Use colours from `nanas_pal`. Don't hard-code new hex values.
   - Titles and subtitles are in Hebrew.
   - Axis labels can be English when they name variables.
@@ -86,12 +86,12 @@ Go through this checklist every time. CI only republishes what is committed: it 
 - **Examples:**
   - Prefer modern, realistic scenarios to textbook toy data: A/B tests, response times, LLM evals and AI-system experiments, operations and service data, survey data.
   - Each example should state its business or engineering question before showing any statistics.
-  - Simulated data is fine. Use a fixed seed (set in `setup.R`).
-- **Method lectures should follow this arc:** question → data → assumptions → method → R output → interpretation → what can go wrong. The exam stresses interpreting software output, so show the R output and explain how to read it.
-- **Hand calculation still matters.** The exam includes manual computation, so the notes should keep the key formulas (as LaTeX math, never images), with a small worked example next to the R version.
+  - Simulated data is fine. Use a fixed seed (set in `py/setup.py`).
+- **Method lectures should follow this arc:** question → data → assumptions → method → Python output → interpretation → what can go wrong. The exam stresses interpreting software output, so show the Python output and explain how to read it.
+- **Hand calculation still matters.** The exam includes manual computation, so the notes should keep the key formulas (as LaTeX math, never images), with a small worked example next to the Python version.
 - **Hebrew text:**
   - Write natural Hebrew.
-  - Keep R code, function names and package names in English.
+  - Keep Python code, function names and package names in English.
   - When an English term appears inline, wrap it as `[Kruskal–Wallis]{.en}` if bidi ordering breaks.
 - **Do not** convert the old PowerPoint decks slide by slide. Their formulas are embedded as images and the examples are dated. Use them as a checklist of topics, not as source text.
 
@@ -140,19 +140,20 @@ These were raised in planning and are not decided yet. Don't assume an answer.
 
 ## Working locally
 
-Requirements: [Quarto](https://quarto.org) ≥ 1.9 and R ≥ 4.5.
+Requirements: [Quarto](https://quarto.org) ≥ 1.7 and Python ≥ 3.11 (with [uv](https://github.com/astral-sh/uv)).
 
 ```bash
-git clone git@github.com:adisarid/nanas-tau.git
-cd nanas-tau
-Rscript -e 'renv::restore()'     # install pinned packages
-quarto preview                   # live preview at localhost
-quarto render                    # full render to _site/
+git clone <this-repo>
+cd nanas-tau-python
+uv venv && source .venv/bin/activate
+uv pip install -r requirements.txt   # install pinned packages
+quarto preview                        # live preview at localhost
+quarto render                         # full render to _site/
 ```
 
-If you add a package, run `renv::snapshot()` and commit `renv.lock`.
+If you add a package, run `uv pip freeze > requirements.txt` and commit it.
 
-**Publishing.** Pushing to `main` triggers the GitHub Action, which republishes the site. CI does not run R, so always render locally and commit `_freeze/` together with your `.qmd` changes. If you forget, the CI render fails. CI also has no browser, so the slide PDFs in `lectures/pdf/` are regenerated locally (`scripts/slides-pdf.sh`) and committed; if you forget, the site serves a stale PDF without any error. Follow the checklist in [Before every push to `main`](#before-every-push-to-main) above.
+**Publishing.** Pushing to `main` triggers the GitHub Action, which republishes the site. CI does not execute the Python chunks, so always render locally and commit `_freeze/` together with your `.qmd` changes. If you forget, the CI render fails. CI also has no browser, so the slide PDFs in `lectures/pdf/` are regenerated locally (`scripts/slides-pdf.sh`) and committed; if you forget, the site serves a stale PDF without any error. Follow the checklist in [Before every push to `main`](#before-every-push-to-main) above.
 
 ## Licence
 

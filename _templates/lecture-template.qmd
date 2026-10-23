@@ -12,7 +12,7 @@ format:
 Copy to lectures/NN-slug.qmd, then:
   1. set title / subtitle / output-file (NN-slug-slides.html)
   2. add the lecture to the navbar menu in _quarto.yml and to lectures.qmd
-  3. quarto render lectures/NN-slug.qmd  (locally — CI never runs R)
+  3. quarto render lectures/NN-slug.qmd  (locally — CI never runs Python)
   4. scripts/slides-pdf.sh lectures/NN-slug.qmd  (printable PDF; add its link in lectures.qmd)
 Conventions (see README):
   - every `##` is a slide; it is also a section on the notes page
@@ -20,10 +20,15 @@ Conventions (see README):
   - speaker notes go in ::: notes
 -->
 
-```{r}
+```{python}
 #| label: setup
 #| include: false
-source("../R/setup.R")
+import sys
+sys.path.insert(0, "..")
+from py.setup import nanas_pal, apply_nanas_theme
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 ```
 
 ## מה נלמד היום
@@ -37,13 +42,15 @@ source("../R/setup.R")
 
 ## דוגמה מהשטח
 
-```{r}
+```{python}
 #| label: fig-example
 #| echo: true
 #| fig-cap: "כיתוב לתרשים"
-ggplot(mtcars, aes(wt, mpg)) +
-  geom_point() +
-  labs(title = "כותרת התרשים", x = "Weight", y = "MPG")
+mtcars = pd.DataFrame({"wt": [2.6, 2.9, 3.2, 3.5], "mpg": [21, 22, 18, 17]})
+fig, ax = plt.subplots()
+ax.scatter(mtcars["wt"], mtcars["mpg"], color=nanas_pal["primary"])
+ax.set(title="כותרת התרשים", xlabel="Weight", ylabel="MPG")
+plt.show()
 ```
 
 ::: {.content-hidden when-format="revealjs"}

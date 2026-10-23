@@ -1,5 +1,6 @@
 # Every lecture renders twice: a notes page (html) and a slide deck (revealjs).
 # The deck file name is set per lecture via `format.revealjs.output-file`.
+jupyter: python3
 format-links: [revealjs]
 format:
   html:

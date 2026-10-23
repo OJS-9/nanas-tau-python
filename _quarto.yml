@@ -12,13 +12,7 @@ execute:
   warning: false
   message: false
 
-knitr:
-  opts_chunk:
-    dev: ragg_png
-    fig.align: center
-    fig.width: 8
-    fig.height: 4.5
-    dpi: 150
+jupyter: python3
 
 lang: he
 dir: rtl
