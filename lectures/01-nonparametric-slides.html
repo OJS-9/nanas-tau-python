@@ -312,15 +312,16 @@
 <span id="cb2-3"><a aria-hidden="true" tabindex="-1"></a>ax.hist(gentoo.body_mass, bins<span class="op">=</span>bins, color<span class="op">=</span>nanas_pal[<span class="st">"grey"</span>])</span>
 <span id="cb2-4"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"משקל הגוף של פינגווינים מסוג Gentoo</span><span class="ch">\n</span><span class="st">119 פרטים, זכרים ונקבות יחד"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb2-5"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Body mass (g)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"Count"</span>)</span>
-<span id="cb2-6"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-6"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb2-7"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"01/penguins-hist-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="התפלגות-המשקל-output" class="slide level2 output-location-slide"><h2>התפלגות המשקל</h2><div class="cell output-location-slide" data-fig-height="4" data-execution_count="3">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 <figure>
-<p><img data-src="01-nonparametric_files/figure-html/penguins-hist-output-1.png" id="penguins-hist"></p>
+<p><img data-src="01-nonparametric_files/figure-revealjs/penguins-hist-output-1.png" id="penguins-hist"></p>
 </figure>
 </div>
 </div>
@@ -339,15 +340,16 @@
 <span id="cb3-10"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"הזכרים כבדים בכ-800 גרם בממוצע</span><span class="ch">\n</span><span class="st">הקווים המקווקווים: הממוצע בכל קבוצה"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb3-11"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Body mass (g)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"Count"</span>)</span>
 <span id="cb3-12"><a aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb3-13"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-13"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb3-14"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"01/penguins-hist-sex-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="המשקל-לפי-מין-output" class="slide level2 output-location-slide"><h2>המשקל לפי מין</h2><div class="cell output-location-slide" data-fig-height="4" data-execution_count="4">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 <figure>
-<p><img data-src="01-nonparametric_files/figure-html/penguins-hist-sex-output-1.png" id="penguins-hist-sex"></p>
+<p><img data-src="01-nonparametric_files/figure-revealjs/penguins-hist-sex-output-1.png" id="penguins-hist-sex"></p>
 </figure>
 </div>
 </div>
@@ -450,15 +452,16 @@ F(a) = 1 - \frac{1}{1+a} = 0.5 \;\Rightarrow\; \tilde{\mu} = 1
 <span id="cb6-15"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"החציון מתכנס ל-1, הממוצע ממשיך לטפס</span><span class="ch">\n</span><span class="st">דגימות מהתפלגות שבה התוחלת אינסופית"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb6-16"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Sample size (log scale)"</span>)</span>
 <span id="cb6-17"><a aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb6-18"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-18"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb6-19"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"01/running-mean-median-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="סימולציה-ממוצע-מול-חציון-output" class="slide level2 output-location-slide"><h2>סימולציה: ממוצע מול חציון</h2><div class="cell output-location-slide" data-execution_count="6">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 <figure>
-<p><img data-src="01-nonparametric_files/figure-html/running-mean-median-output-1.png" id="running-mean-median"></p>
+<p><img data-src="01-nonparametric_files/figure-revealjs/running-mean-median-output-1.png" id="running-mean-median"></p>
 </figure>
 </div>
 </div>
@@ -468,10 +471,10 @@ F(a) = 1 - \frac{1}{1+a} = 0.5 \;\Rightarrow\; \tilde{\mu} = 1
 <div class="columns">
 <div class="column" style="width:55%;">
 <div id="cell-likert-plot" class="cell" data-fig-height="4.5" data-execution_count="8">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 <figure>
-<p><img data-src="01-nonparametric_files/figure-html/likert-plot-output-1.png" id="likert-plot"></p>
+<p><img data-src="01-nonparametric_files/figure-revealjs/likert-plot-output-1.png" id="likert-plot"></p>
 </figure>
 </div>
 </div>
@@ -606,15 +609,16 @@ Name: n, dtype: int64</code></pre>
 <span id="cb11-11"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"15 מתוך 20 בקשות מעל 200 ms"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb11-12"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Latency (ms)"</span>)</span>
 <span id="cb11-13"><a aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb11-14"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb11-14"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb11-15"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"01/api-plot-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="דוגמה-זמני-תגובה-של-api-output" class="slide level2 output-location-slide"><h2>דוגמה: זמני תגובה של API</h2><div class="cell output-location-slide" data-fig-height="3" data-execution_count="12">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 <figure>
-<p><img data-src="01-nonparametric_files/figure-html/api-plot-output-1.png" id="api-plot"></p>
+<p><img data-src="01-nonparametric_files/figure-revealjs/api-plot-output-1.png" id="api-plot"></p>
 </figure>
 </div>
 </div>
@@ -1071,7 +1075,8 @@ Name: units, dtype: str</code></pre>
 <span id="cb30-15"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"הדרגות של המדגם המאוחד"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb30-16"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Daily output (units)"</span>)</span>
 <span id="cb30-17"><a aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb30-18"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb30-18"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb30-19"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"01/production-ranks-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 <p><span class="math display">\[
@@ -1085,10 +1090,10 @@ V(T) = \tfrac{5 \cdot 6 \cdot 12}{12} = 30
 <p>ולכן <strong>לא דוחים</strong> <span class="math inline">\(H_0\)</span>: הנתונים מתיישבים עם שיפור של 3 יחידות ביום.</p>
 </section>
 <section id="דירוג-הרשימה-המאוחדת-output" class="slide level2 output-location-slide"><h2>דירוג הרשימה המאוחדת</h2><div class="cell output-location-slide" data-fig-height="2.6" data-execution_count="25">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="24">
 <div>
 <figure>
-<p><img data-src="01-nonparametric_files/figure-html/production-ranks-output-1.png" id="production-ranks"></p>
+<p><img data-src="01-nonparametric_files/figure-revealjs/production-ranks-output-1.png" id="production-ranks"></p>
 </figure>
 </div>
 </div>
@@ -1192,15 +1197,16 @@ D = \max_i \left\{ \frac{i}{n} - F_0(x_{(i)}),\;\; F_0(x_{(i)}) - \frac{i-1}{n} 
 <span id="cb37-17"><a aria-hidden="true" tabindex="-1"></a>            ha<span class="op">=</span><span class="st">"left"</span>, va<span class="op">=</span><span class="st">"center"</span>, bbox<span class="op">=</span><span class="bu">dict</span>(facecolor<span class="op">=</span><span class="st">"white"</span>, edgecolor<span class="op">=</span><span class="st">"none"</span>))</span>
 <span id="cb37-18"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"יותר מדי פינגווינים קלים</span><span class="ch">\n</span><span class="st">כחול: התפלגות אמפירית · מקווקו: נורמלית עם אותו ממוצע וסטיית תקן"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb37-19"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Body mass (g)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"F(x)"</span>)</span>
-<span id="cb37-20"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb37-20"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb37-21"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"01/ks-one-sample-plot-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="הפונקציה-האמפירית-מול-הנורמלית-output" class="slide level2 output-location-slide"><h2>הפונקציה האמפירית מול הנורמלית</h2><div class="cell output-location-slide" data-fig-height="4.2" data-execution_count="29">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="28">
 <div>
 <figure>
-<p><img data-src="01-nonparametric_files/figure-html/ks-one-sample-plot-output-1.png" id="ks-one-sample-plot"></p>
+<p><img data-src="01-nonparametric_files/figure-revealjs/ks-one-sample-plot-output-1.png" id="ks-one-sample-plot"></p>
 </figure>
 </div>
 </div>
@@ -1299,15 +1305,16 @@ H_0: F_1(x) = F_2(x) \qquad D = \max_x \left| F_{1,n}(x) - F_{2,m}(x) \right|
 <span id="cb39-18"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"אותו חציון, פיזור שונה לגמרי</span><span class="ch">\n</span><span class="st">הקו השחור: המרחק הגדול ביותר בין שתי הפונקציות"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb39-19"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Response time (ms, log scale)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"F(x)"</span>)</span>
 <span id="cb39-20"><a aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb39-21"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb39-21"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb39-22"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"01/ks-ecdf-plot-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="שתי-פונקציות-התפלגות-מצטברות-output" class="slide level2 output-location-slide"><h2>שתי פונקציות התפלגות מצטברות</h2><div class="cell output-location-slide" data-fig-height="4.2" data-execution_count="31">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="30">
 <div>
 <figure>
-<p><img data-src="01-nonparametric_files/figure-html/ks-ecdf-plot-output-1.png" id="ks-ecdf-plot"></p>
+<p><img data-src="01-nonparametric_files/figure-revealjs/ks-ecdf-plot-output-1.png" id="ks-ecdf-plot"></p>
 </figure>
 </div>
 </div>
@@ -1675,15 +1682,16 @@ n_c = 12, \qquad n_d = 3
 <span id="cb44-16"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Pearson = </span><span class="sc">{pearson:.2f}</span><span class="st"> · Spearman = </span><span class="sc">{spearman:.2f}</span><span class="st"> · Kendall = </span><span class="sc">{kendall:.2f}</span><span class="ch">\n</span><span class="st">קשר מונוטוני ברור, עם תצפית חריגה אחת"</span>.<span class="bu">format</span>(<span class="op">**</span>corr_stats),</span>
 <span id="cb44-17"><a aria-hidden="true" tabindex="-1"></a>             loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb44-18"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"x"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"y"</span>)</span>
-<span id="cb44-19"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb44-19"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb44-20"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"01/corr-sim-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="דוגמה-קשר-מונוטוני-וערך-חריג-אחד-output" class="slide level2 output-location-slide"><h2>דוגמה: קשר מונוטוני וערך חריג אחד</h2><div class="cell output-location-slide" data-fig-height="4" data-execution_count="37">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="36">
 <div>
 <figure>
-<p><img data-src="01-nonparametric_files/figure-html/corr-sim-output-1.png" id="corr-sim"></p>
+<p><img data-src="01-nonparametric_files/figure-revealjs/corr-sim-output-1.png" id="corr-sim"></p>
 </figure>
 </div>
 </div>
@@ -1715,15 +1723,16 @@ n_c = 12, \qquad n_d = 3
 <span id="cb45-22"><a aria-hidden="true" tabindex="-1"></a>ax.set_yticks(<span class="bu">range</span>(<span class="dv">5</span>))<span class="op">;</span> ax.set_yticklabels(likert_levels)</span>
 <span id="cb45-23"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"מי שאוהב סטטיסטיקה נוטה לאהוב ספרות פחות</span><span class="ch">\n</span><span class="st">מספר המשיבים בכל צירוף תשובות"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb45-24"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Liking statistics"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"Liking literature"</span>)</span>
-<span id="cb45-25"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb45-25"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb45-26"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"01/likert-corr-data-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="דוגמה-סטטיסטיקה-מול-ספרות-output" class="slide level2 smaller output-location-slide"><h2>דוגמה: סטטיסטיקה מול ספרות</h2><div class="cell output-location-slide" data-fig-height="4.2" data-execution_count="38">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="37">
 <div>
 <figure>
-<p><img data-src="01-nonparametric_files/figure-html/likert-corr-data-output-1.png" id="likert-corr-data"></p>
+<p><img data-src="01-nonparametric_files/figure-revealjs/likert-corr-data-output-1.png" id="likert-corr-data"></p>
 </figure>
 </div>
 </div>

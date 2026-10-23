@@ -262,10 +262,11 @@
 <span id="cb2-5"><a aria-hidden="true" tabindex="-1"></a>ax.scatter(cpu.load, cpu.util, s<span class="op">=</span><span class="dv">40</span>, color<span class="op">=</span>nanas_pal[<span class="st">"primary"</span>])</span>
 <span id="cb2-6"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"ככל שהעומס עולה, המעבד עובד קשה יותר</span><span class="ch">\n</span><span class="st">עשרה חלונות זמן · הקו: קו הריבועים הפחותים"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb2-7"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Load (k requests / min)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"CPU utilisation (%)"</span>)</span>
-<span id="cb2-8"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-8"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb2-9"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"03/cpu-plot-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 
 </div>
-<img data-src="03-multiple-regression_files/figure-html/cpu-plot-output-1.png" id="cpu-plot" class="r-stretch"></section>
+<img data-src="03-multiple-regression_files/figure-revealjs/cpu-plot-output-1.png" id="cpu-plot" class="r-stretch"></section>
 <section id="המודל" class="slide level2 smaller">
 <h2>המודל</h2>
 <p><span class="math display">\[
@@ -343,7 +344,7 @@ Dep. Variable:                   util   R-squared:                       0.895
 Model:                            OLS   Adj. R-squared:                  0.882
 Method:                 Least Squares   F-statistic:                     68.42
 Date:                Fri, 23 Oct 2026   Prob (F-statistic):           3.43e-05
-Time:                        13:53:43   Log-Likelihood:                -14.313
+Time:                        14:10:04   Log-Likelihood:                -14.313
 No. Observations:                  10   AIC:                             32.63
 Df Residuals:                       8   BIC:                             33.23
 Df Model:                           1                                         
@@ -659,15 +660,16 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 <span id="cb10-5"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"תשובה ארוכה יותר, המתנה ארוכה יותר</span><span class="ch">\n</span><span class="st">וכל מודל שפה עם שיפוע משלו"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb10-6"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Output tokens"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"Latency (s)"</span>)</span>
 <span id="cb10-7"><a aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb10-8"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb10-8"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb10-9"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"03/llm-plot-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="זמן-התגובה-מול-אורך-התשובה-output" class="slide level2 output-location-slide"><h2>זמן התגובה מול אורך התשובה</h2><div class="cell output-location-slide" data-fig-height="4.2" data-execution_count="9">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 <figure>
-<p><img data-src="03-multiple-regression_files/figure-html/llm-plot-output-1.png" id="llm-plot"></p>
+<p><img data-src="03-multiple-regression_files/figure-revealjs/llm-plot-output-1.png" id="llm-plot"></p>
 </figure>
 </div>
 </div>
@@ -747,7 +749,7 @@ Dep. Variable:                latency   R-squared:                       0.808
 Model:                            OLS   Adj. R-squared:                  0.806
 Method:                 Least Squares   F-statistic:                     518.9
 Date:                Fri, 23 Oct 2026   Prob (F-statistic):           3.58e-89
-Time:                        13:53:43   Log-Likelihood:                -650.14
+Time:                        14:10:04   Log-Likelihood:                -650.14
 No. Observations:                 250   AIC:                             1306.
 Df Residuals:                     247   BIC:                             1317.
 Df Model:                           2                                         
@@ -1175,15 +1177,16 @@ F = \frac{(2656 - 1025) / 2}{1025 / 245} = 195
 <span id="cb23-9"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"קווים מקבילים לא מתאימים לנתונים</span><span class="ch">\n</span><span class="st">הקווים: החיזוי של רגרסיה בלי אינטראקציה (בממוצע הקלט)"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb23-10"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Output tokens"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"Latency (s)"</span>)</span>
 <span id="cb23-11"><a aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb23-12"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb23-12"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb23-13"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"03/parallel-lines-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="האם-הקווים-מקבילים-output" class="slide level2 output-location-slide"><h2>האם הקווים מקבילים?</h2><div class="cell output-location-slide" data-fig-height="4.2" data-execution_count="18">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <div>
 <figure>
-<p><img data-src="03-multiple-regression_files/figure-html/parallel-lines-output-1.png" id="parallel-lines"></p>
+<p><img data-src="03-multiple-regression_files/figure-revealjs/parallel-lines-output-1.png" id="parallel-lines"></p>
 </figure>
 </div>
 </div>
@@ -1230,7 +1233,7 @@ Dep. Variable:                latency   R-squared:                       0.981
 Model:                            OLS   Adj. R-squared:                  0.981
 Method:                 Least Squares   F-statistic:                     2141.
 Date:                Fri, 23 Oct 2026   Prob (F-statistic):          3.23e-207
-Time:                        13:53:44   Log-Likelihood:                -357.96
+Time:                        14:10:04   Log-Likelihood:                -357.96
 No. Observations:                 250   AIC:                             729.9
 Df Residuals:                     243   BIC:                             754.6
 Df Model:                           6                                         
@@ -1340,15 +1343,16 @@ strong multicollinearity or other numerical problems.</code></pre>
 <span id="cb27-9"><a aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"Residual (s)"</span>)</span>
 <span id="cb27-10"><a aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].legend()</span>
 <span id="cb27-11"><a aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"השאריות חושפות את מה שהרגרסיה פספסה</span><span class="ch">\n</span><span class="st">משמאל: דפוס ברור לפי גודל מודל השפה · מימין: ענן אקראי סביב אפס"</span>)</span>
-<span id="cb27-12"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb27-12"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb27-13"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"03/resid-plot-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
 <section id="שאריות-מול-ערכים-חזויים-output" class="slide level2 output-location-slide"><h2>שאריות מול ערכים חזויים</h2><div class="cell output-location-slide" data-fig-height="4.2" data-execution_count="22">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="22">
 <div>
 <figure>
-<p><img data-src="03-multiple-regression_files/figure-html/resid-plot-output-1.png" id="resid-plot"></p>
+<p><img data-src="03-multiple-regression_files/figure-revealjs/resid-plot-output-1.png" id="resid-plot"></p>
 </figure>
 </div>
 </div>
@@ -1409,10 +1413,11 @@ strong multicollinearity or other numerical problems.</code></pre>
 <span id="cb28-3"><a aria-hidden="true" tabindex="-1"></a>sm.qqplot(std_resid, line<span class="op">=</span><span class="st">"45"</span>, ax<span class="op">=</span>ax, color<span class="op">=</span>nanas_pal[<span class="st">"primary"</span>])</span>
 <span id="cb28-4"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"השאריות קרובות לנורמליות</span><span class="ch">\n</span><span class="st">שאריות מתוקננות של fit4 מול הכמויות של N(0,1)"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb28-5"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Theoretical quantile"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"Standardised residual"</span>)</span>
-<span id="cb28-6"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb28-6"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb28-7"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"03/qq-plot-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 
 </div>
-<img data-src="03-multiple-regression_files/figure-html/qq-plot-output-1.png" id="qq-plot" class="r-stretch"></section>
+<img data-src="03-multiple-regression_files/figure-revealjs/qq-plot-output-1.png" id="qq-plot" class="r-stretch"></section>
 <section id="מבחן-kolmogorovsmirnov-לשאריות" class="slide level2 smaller">
 <h2>מבחן <span class="en">Kolmogorov–Smirnov</span> לשאריות</h2>
 <p>גרף Q-Q הוא בדיקה בעין. אפשר גם לבדוק את הנורמליות במבחן, עם מבחן KS מההרצאה על שיטות א-פרמטריות:</p>
@@ -1692,14 +1697,15 @@ VIF_j = \frac{1}{1 - R_j^2}
 <span id="cb39-10"><a aria-hidden="true" tabindex="-1"></a>ax.scatter(cpu.load, cpu.util, s<span class="op">=</span><span class="dv">25</span>)</span>
 <span id="cb39-11"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"רווח החיזוי רחב יותר מרווח הסמך, ושניהם מתרחבים בקצוות</span><span class="ch">\n</span><span class="st">דוגמת המעבד · כהה: רווח סמך 95% לתוחלת · בהיר: רווח חיזוי 95% לתצפית בודדת"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb39-12"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Load (k requests / min)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"CPU utilisation (%)"</span>)</span>
-<span id="cb39-13"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb39-13"><a aria-hidden="true" tabindex="-1"></a>plt.close(fig)</span>
+<span id="cb39-14"><a aria-hidden="true" tabindex="-1"></a>show_original(<span class="st">"03/ci-pi-plot-1.png"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section><section id="איך-זה-נראה-output" class="slide level2 output-location-slide"><h2>איך זה נראה</h2><div class="cell output-location-slide" data-fig-height="4.2" data-execution_count="31">
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="31">
 <div>
 <figure>
-<p><img data-src="03-multiple-regression_files/figure-html/ci-pi-plot-output-1.png" id="ci-pi-plot"></p>
+<p><img data-src="03-multiple-regression_files/figure-revealjs/ci-pi-plot-output-1.png" id="ci-pi-plot"></p>
 </figure>
 </div>
 </div>
