@@ -6,8 +6,8 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.7.32">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.19">
 
   <meta name="author" content="ד״ר עדי שריד">
   <meta name="dcterms.date" content="2026-10-23">
@@ -18,10 +18,16 @@
   <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
   <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
   <style>
-    code{white-space: pre-wrap;}
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
@@ -96,7 +102,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-1147702834a100fe229bdd3c6b6dc8cc.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-99ebd0278b0d5be90c6a40018b054bfa.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -211,7 +217,7 @@
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-ד״ר עדי שריד 
+ד״ר עדי שריד
 </div>
 </div>
 </div>
@@ -240,23 +246,23 @@
 <p>צוות התשתיות מתכנן קיבולת (<span class="en">capacity planning</span>) לשירות חדש. בעשרה חלונות זמן נמדדו העומס (אלפי בקשות בדקה) וניצולת המעבד (CPU, באחוזים).</p>
 <p><strong>השאלות:</strong> בכמה עולה ניצולת המעבד עם כל אלף בקשות נוספות בדקה? והאם הקשר הזה “אמיתי”, או שהוא יכול להיות מקרי?</p>
 <div id="cpu-data" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a>cpu <span class="op">=</span> pd.DataFrame({</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a>cpu <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb1-2"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"load"</span>: [<span class="dv">10</span>, <span class="fl">11.5</span>, <span class="fl">14.5</span>, <span class="dv">12</span>, <span class="dv">15</span>, <span class="fl">16.6</span>, <span class="fl">12.5</span>, <span class="dv">13</span>, <span class="dv">14</span>, <span class="dv">17</span>],         <span class="co"># k requests / min</span></span>
 <span id="cb1-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"util"</span>: [<span class="dv">15</span>, <span class="fl">16.6</span>, <span class="fl">20.2</span>, <span class="fl">16.3</span>, <span class="fl">19.4</span>, <span class="fl">24.4</span>, <span class="dv">17</span>, <span class="fl">17.1</span>, <span class="fl">17.7</span>, <span class="fl">24.4</span>],  <span class="co"># CPU %</span></span>
-<span id="cb1-4"><a aria-hidden="true" tabindex="-1"></a>})</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="הנתונים" class="slide level2">
 <h2>הנתונים</h2>
 <div id="cell-cpu-plot" class="cell" data-fig-height="4" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a>b1, b0 <span class="op">=</span> np.polyfit(cpu.load, cpu.util, <span class="dv">1</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a>b1, b0 <span class="op">=</span> np.polyfit(cpu.load, cpu.util, <span class="dv">1</span>)</span>
 <span id="cb2-2"><a aria-hidden="true" tabindex="-1"></a>xs <span class="op">=</span> np.linspace(cpu.load.<span class="bu">min</span>(), cpu.load.<span class="bu">max</span>(), <span class="dv">50</span>)</span>
 <span id="cb2-3"><a aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
 <span id="cb2-4"><a aria-hidden="true" tabindex="-1"></a>ax.plot(xs, b0 <span class="op">+</span> b1 <span class="op">*</span> xs, color<span class="op">=</span>nanas_pal[<span class="st">"grey"</span>], linewidth<span class="op">=</span><span class="fl">0.8</span>)</span>
 <span id="cb2-5"><a aria-hidden="true" tabindex="-1"></a>ax.scatter(cpu.load, cpu.util, s<span class="op">=</span><span class="dv">40</span>, color<span class="op">=</span>nanas_pal[<span class="st">"primary"</span>])</span>
 <span id="cb2-6"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"ככל שהעומס עולה, המעבד עובד קשה יותר</span><span class="ch">\n</span><span class="st">עשרה חלונות זמן · הקו: קו הריבועים הפחותים"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb2-7"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Load (k requests / min)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"CPU utilisation (%)"</span>)</span>
-<span id="cb2-8"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-8"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 
 </div>
 <img data-src="03-multiple-regression_files/figure-html/cpu-plot-output-1.png" id="cpu-plot" class="r-stretch"></section>
@@ -295,13 +301,13 @@ S_{xy} = \sum_{i=1}^{n} (x_i - \bar x)(y_i - \bar y) = \sum x_i y_i - n \bar x \
 <section id="חישוב-ידני" class="slide level2 smaller">
 <h2>חישוב ידני</h2>
 <div id="cell-cpu-sums" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a aria-hidden="true" tabindex="-1"></a>x_bar, y_bar <span class="op">=</span> cpu.load.mean(), cpu.util.mean()</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a aria-hidden="true" tabindex="-1"></a>x_bar, y_bar <span class="op">=</span> cpu.load.mean(), cpu.util.mean()</span>
 <span id="cb3-2"><a aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
 <span id="cb3-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"n"</span>: <span class="bu">len</span>(cpu), <span class="st">"x_bar"</span>: x_bar, <span class="st">"y_bar"</span>: y_bar,</span>
 <span id="cb3-4"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sxx"</span>: ((cpu.load <span class="op">-</span> x_bar) <span class="op">**</span> <span class="dv">2</span>).<span class="bu">sum</span>(),</span>
 <span id="cb3-5"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sxy"</span>: ((cpu.load <span class="op">-</span> x_bar) <span class="op">*</span> (cpu.util <span class="op">-</span> y_bar)).<span class="bu">sum</span>(),</span>
 <span id="cb3-6"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"Syy"</span>: ((cpu.util <span class="op">-</span> y_bar) <span class="op">**</span> <span class="dv">2</span>).<span class="bu">sum</span>(),</span>
-<span id="cb3-7"><a aria-hidden="true" tabindex="-1"></a>})</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-7"><a aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="cpu-sums" class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>n        10.000
 x_bar    13.610
@@ -328,8 +334,8 @@ t = \frac{1.396}{0.169} = 8.27 \qquad R^2 = \frac{SS_R}{S_{yy}} = 0.895
 <section id="אותו-חישוב-ב-r" class="slide level2 smaller">
 <h2>אותו חישוב ב-R</h2>
 <div id="cpu-lm" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a aria-hidden="true" tabindex="-1"></a>fit_cpu <span class="op">=</span> smf.ols(<span class="st">"util ~ load"</span>, data<span class="op">=</span>cpu).fit()</span>
-<span id="cb5-2"><a aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(fit_cpu.summary())</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a aria-hidden="true" tabindex="-1"></a>fit_cpu <span class="op">=</span> smf.ols(<span class="st">"util ~ load"</span>, data<span class="op">=</span>cpu).fit()</span>
+<span id="cb5-2"><a aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(fit_cpu.summary())</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                            OLS Regression Results                            
 ==============================================================================
@@ -391,22 +397,22 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 \]</span></p>
 <p>אם מחסירים מ-<span class="math inline">\(x\)</span> את הממוצע שלו, <span class="math inline">\(\bar x = 0\)</span>, והחותך הופך ל-<span class="math inline">\(\bar y\)</span>: הניצולת הצפויה <strong>בעומס הממוצע</strong>.</p>
 <div id="cell-cpu-centered" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a aria-hidden="true" tabindex="-1"></a>cpu_c <span class="op">=</span> cpu.assign(load_c<span class="op">=</span>cpu.load <span class="op">-</span> cpu.load.mean())</span>
-<span id="cb7-2"><a aria-hidden="true" tabindex="-1"></a>smf.ols(<span class="st">"util ~ load_c"</span>, data<span class="op">=</span>cpu_c).fit().summary().tables[<span class="dv">1</span>]</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a aria-hidden="true" tabindex="-1"></a>cpu_c <span class="op">=</span> cpu.assign(load_c<span class="op">=</span>cpu.load <span class="op">-</span> cpu.load.mean())</span>
+<span id="cb7-2"><a aria-hidden="true" tabindex="-1"></a>smf.ols(<span class="st">"util ~ load_c"</span>, data<span class="op">=</span>cpu_c).fit().summary().tables[<span class="dv">1</span>]</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="cpu-centered" class="cell-output cell-output-display" data-execution_count="6">
-<table class="simpletable caption-top" data-quarto-postprocess="true">
+<table class="simpletable caption-top">
 <tbody>
 <tr class="odd">
 <td></td>
-<td data-quarto-table-cell-role="th">coef</td>
-<td data-quarto-table-cell-role="th">std err</td>
-<td data-quarto-table-cell-role="th">t</td>
-<td data-quarto-table-cell-role="th">P&gt;|t|</td>
-<td data-quarto-table-cell-role="th">[0.025</td>
-<td data-quarto-table-cell-role="th">0.975]</td>
+<th data-quarto-table-cell-role="th">coef</th>
+<th data-quarto-table-cell-role="th">std err</th>
+<th data-quarto-table-cell-role="th">t</th>
+<th data-quarto-table-cell-role="th">P&gt;|t|</th>
+<th data-quarto-table-cell-role="th">[0.025</th>
+<th data-quarto-table-cell-role="th">0.975]</th>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">Intercept</td>
+<th data-quarto-table-cell-role="th">Intercept</th>
 <td>18.8100</td>
 <td>0.358</td>
 <td>52.551</td>
@@ -415,7 +421,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 <td>19.635</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">load_c</td>
+<th data-quarto-table-cell-role="th">load_c</th>
 <td>1.3959</td>
 <td>0.169</td>
 <td>8.272</td>
@@ -472,7 +478,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 </tbody>
 </table>
 <div id="cell-cpu-anova" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a aria-hidden="true" tabindex="-1"></a>sm.stats.anova_lm(fit_cpu, typ<span class="op">=</span><span class="dv">1</span>)</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a aria-hidden="true" tabindex="-1"></a>sm.stats.anova_lm(fit_cpu, typ<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="cpu-anova" class="cell-output cell-output-display" data-execution_count="7">
 <div>
 <style scoped="">
@@ -489,7 +495,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
     }
 </style>
 
-<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top" data-border="1">
 <thead>
 <tr class="header" style="text-align: right;">
 <th data-quarto-table-cell-role="th"></th>
@@ -502,7 +508,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">load</td>
+<th data-quarto-table-cell-role="th">load</th>
 <td>1.0</td>
 <td>87.6595</td>
 <td>87.6595</td>
@@ -510,7 +516,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 <td>3.4310e-05</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">Residual</td>
+<th data-quarto-table-cell-role="th">Residual</th>
 <td>8.0</td>
 <td>10.2495</td>
 <td>1.2812</td>
@@ -545,7 +551,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 <section id="הנתונים-1" class="slide level2">
 <h2>הנתונים</h2>
 <div id="cell-llm-data" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Own RNG stream, so edits elsewhere in the lecture don't change this example.</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Own RNG stream, so edits elsewhere in the lecture don't change this example.</span></span>
 <span id="cb9-2"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Note: numpy's RNG differs from R's, so exact simulated values differ from the</span></span>
 <span id="cb9-3"><a aria-hidden="true" tabindex="-1"></a><span class="co"># R original, but the data-generating recipe (and so the statistical conclusions</span></span>
 <span id="cb9-4"><a aria-hidden="true" tabindex="-1"></a><span class="co"># below) is identical.</span></span>
@@ -570,7 +576,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 <span id="cb9-23"><a aria-hidden="true" tabindex="-1"></a>                           sec_tok <span class="op">*</span> llm.output_tokens <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="dv">1</span>, n_calls), <span class="dv">2</span>)</span>
 <span id="cb9-24"><a aria-hidden="true" tabindex="-1"></a>llm[<span class="st">"input_k"</span>] <span class="op">=</span> llm.input_tokens <span class="op">/</span> <span class="dv">1000</span></span>
 <span id="cb9-25"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-26"><a aria-hidden="true" tabindex="-1"></a>llm[[<span class="st">"model"</span>, <span class="st">"input_tokens"</span>, <span class="st">"output_tokens"</span>, <span class="st">"rag_docs"</span>, <span class="st">"hour"</span>, <span class="st">"latency"</span>]].head(<span class="dv">4</span>)</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-26"><a aria-hidden="true" tabindex="-1"></a>llm[[<span class="st">"model"</span>, <span class="st">"input_tokens"</span>, <span class="st">"output_tokens"</span>, <span class="st">"rag_docs"</span>, <span class="st">"hour"</span>, <span class="st">"latency"</span>]].head(<span class="dv">4</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="llm-data" class="cell-output cell-output-display" data-execution_count="8">
 <div>
 <style scoped="">
@@ -587,7 +593,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
     }
 </style>
 
-<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top" data-border="1">
 <thead>
 <tr class="header" style="text-align: right;">
 <th data-quarto-table-cell-role="th"></th>
@@ -601,7 +607,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
+<th data-quarto-table-cell-role="th">0</th>
 <td>small</td>
 <td>1931.0</td>
 <td>189.0</td>
@@ -610,7 +616,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 <td>2.78</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<th data-quarto-table-cell-role="th">1</th>
 <td>small</td>
 <td>3907.0</td>
 <td>133.0</td>
@@ -619,7 +625,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 <td>4.70</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<th data-quarto-table-cell-role="th">2</th>
 <td>large</td>
 <td>2758.0</td>
 <td>553.0</td>
@@ -628,7 +634,7 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 <td>17.73</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
+<th data-quarto-table-cell-role="th">3</th>
 <td>small</td>
 <td>2258.0</td>
 <td>278.0</td>
@@ -646,14 +652,14 @@ V(\hat\beta_0) = \sigma^2 \left[\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right]
 <section id="זמן-התגובה-מול-אורך-התשובה" class="slide level2">
 <h2>זמן התגובה מול אורך התשובה</h2>
 <div id="cell-llm-plot" class="cell" data-fig-height="4.2" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">4.2</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">4.2</span>))</span>
 <span id="cb10-2"><a aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> m, color <span class="kw">in</span> model_cols.items():</span>
 <span id="cb10-3"><a aria-hidden="true" tabindex="-1"></a>    sub <span class="op">=</span> llm[llm.model <span class="op">==</span> m]</span>
 <span id="cb10-4"><a aria-hidden="true" tabindex="-1"></a>    ax.scatter(sub.output_tokens, sub.latency, alpha<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span>color, label<span class="op">=</span>m)</span>
 <span id="cb10-5"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"תשובה ארוכה יותר, המתנה ארוכה יותר</span><span class="ch">\n</span><span class="st">וכל מודל שפה עם שיפוע משלו"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb10-6"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Output tokens"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"Latency (s)"</span>)</span>
 <span id="cb10-7"><a aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb10-8"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-8"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
@@ -677,8 +683,8 @@ Y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \dots + \beta_k x_{ik} + \vare
 </ul>
 <p>נתחיל משני משתנים מסבירים: הטוקנים בקלט (באלפים) והטוקנים בפלט.</p>
 <div id="cell-llm-fit2" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a aria-hidden="true" tabindex="-1"></a>fit2 <span class="op">=</span> smf.ols(<span class="st">"latency ~ input_k + output_tokens"</span>, data<span class="op">=</span>llm).fit()</span>
-<span id="cb11-2"><a aria-hidden="true" tabindex="-1"></a>fit2.params</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a aria-hidden="true" tabindex="-1"></a>fit2 <span class="op">=</span> smf.ols(<span class="st">"latency ~ input_k + output_tokens"</span>, data<span class="op">=</span>llm).fit()</span>
+<span id="cb11-2"><a aria-hidden="true" tabindex="-1"></a>fit2.params</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="llm-fit2" class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>Intercept       -2.4492
 input_k          0.2483
@@ -702,9 +708,9 @@ X'X\hat{\boldsymbol\beta} = X'\mathbf{y} \quad\Longrightarrow\quad \hat{\boldsym
 <li>צריך ש-<span class="math inline">\(X'X\)</span> תהיה הפיכה: אף משתנה לא יכול להיות צירוף לינארי מדויק של האחרים</li>
 </ul>
 <div id="cell-llm-matrix" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> sm.add_constant(llm[[<span class="st">"input_k"</span>, <span class="st">"output_tokens"</span>]]).to_numpy()  <span class="co"># adds the column of ones</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> sm.add_constant(llm[[<span class="st">"input_k"</span>, <span class="st">"output_tokens"</span>]]).to_numpy()  <span class="co"># adds the column of ones</span></span>
 <span id="cb13-2"><a aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> llm.latency.to_numpy()</span>
-<span id="cb13-3"><a aria-hidden="true" tabindex="-1"></a>np.linalg.solve(X.T <span class="op">@</span> X, X.T <span class="op">@</span> y)                                   <span class="co"># same as fit2.params</span></span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-3"><a aria-hidden="true" tabindex="-1"></a>np.linalg.solve(X.T <span class="op">@</span> X, X.T <span class="op">@</span> y)                                   <span class="co"># same as fit2.params</span></span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="llm-matrix" class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>array([-2.44920495,  0.24828987,  0.02758599])</code></pre>
 </div>
@@ -723,8 +729,8 @@ t = \frac{\hat\beta_j}{se(\hat\beta_j)} \sim t_{n-k-1} \qquad
 \hat\beta_j \pm t_{1-\alpha/2,\, n-k-1} \cdot se(\hat\beta_j)
 \]</span></p>
 <div id="cell-llm-se" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a aria-hidden="true" tabindex="-1"></a>sigma2_hat <span class="op">=</span> (fit2.resid <span class="op">**</span> <span class="dv">2</span>).<span class="bu">sum</span>() <span class="op">/</span> (X.shape[<span class="dv">0</span>] <span class="op">-</span> X.shape[<span class="dv">1</span>])  <span class="co"># SSE / (n - k - 1)</span></span>
-<span id="cb15-2"><a aria-hidden="true" tabindex="-1"></a>np.sqrt(np.diag(sigma2_hat <span class="op">*</span> np.linalg.inv(X.T <span class="op">@</span> X)))              <span class="co"># = "std err" in summary()</span></span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a aria-hidden="true" tabindex="-1"></a>sigma2_hat <span class="op">=</span> (fit2.resid <span class="op">**</span> <span class="dv">2</span>).<span class="bu">sum</span>() <span class="op">/</span> (X.shape[<span class="dv">0</span>] <span class="op">-</span> X.shape[<span class="dv">1</span>])  <span class="co"># SSE / (n - k - 1)</span></span>
+<span id="cb15-2"><a aria-hidden="true" tabindex="-1"></a>np.sqrt(np.diag(sigma2_hat <span class="op">*</span> np.linalg.inv(X.T <span class="op">@</span> X)))              <span class="co"># = "std err" in summary()</span></span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="llm-se" class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>array([0.62964118, 0.21145165, 0.00085701])</code></pre>
 </div>
@@ -733,7 +739,7 @@ t = \frac{\hat\beta_j}{se(\hat\beta_j)} \sim t_{n-k-1} \qquad
 <section id="הפלט-המלא" class="slide level2 smaller">
 <h2>הפלט המלא</h2>
 <div id="llm-fit2-summary" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(fit2.summary())</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(fit2.summary())</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                            OLS Regression Results                            
 ==============================================================================
@@ -850,7 +856,7 @@ R^2_{adj} = 1 - \frac{SS_E / (n - k - 1)}{SS_T / (n - 1)} = 1 - (1 - R^2)\frac{n
 <li><strong><span class="math inline">\(R^2\)</span> המתוקן</strong> “מעניש” על כל משתנה נוסף. הוא עולה רק אם המשתנה מקטין את <span class="math inline">\(MS_E\)</span>. למקסם אותו זה כמו למזער את <span class="math inline">\(MS_E\)</span></li>
 </ul>
 <div id="cell-adj-r2-noise" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a aria-hidden="true" tabindex="-1"></a>rng_n <span class="op">=</span> np.random.default_rng(<span class="dv">8</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a aria-hidden="true" tabindex="-1"></a>rng_n <span class="op">=</span> np.random.default_rng(<span class="dv">8</span>)</span>
 <span id="cb19-2"><a aria-hidden="true" tabindex="-1"></a>llm_noise <span class="op">=</span> llm.assign(noise1<span class="op">=</span>rng_n.standard_normal(<span class="bu">len</span>(llm)),</span>
 <span id="cb19-3"><a aria-hidden="true" tabindex="-1"></a>                        noise2<span class="op">=</span>rng_n.standard_normal(<span class="bu">len</span>(llm)),</span>
 <span id="cb19-4"><a aria-hidden="true" tabindex="-1"></a>                        noise3<span class="op">=</span>rng_n.standard_normal(<span class="bu">len</span>(llm)))</span>
@@ -858,7 +864,7 @@ R^2_{adj} = 1 - \frac{SS_E / (n - k - 1)}{SS_T / (n - 1)} = 1 - (1 - R^2)\frac{n
 <span id="cb19-6"><a aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb19-7"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"fit2"</span>: {<span class="st">"R2"</span>: fit2.rsquared, <span class="st">"adj"</span>: fit2.rsquared_adj},</span>
 <span id="cb19-8"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"fit_noise"</span>: {<span class="st">"R2"</span>: fit_noise.rsquared, <span class="st">"adj"</span>: fit_noise.rsquared_adj},</span>
-<span id="cb19-9"><a aria-hidden="true" tabindex="-1"></a>}).T</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-9"><a aria-hidden="true" tabindex="-1"></a>}).T</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="adj-r2-noise" class="cell-output cell-output-display" data-execution_count="14">
 <div>
 <style scoped="">
@@ -875,7 +881,7 @@ R^2_{adj} = 1 - \frac{SS_E / (n - k - 1)}{SS_T / (n - 1)} = 1 - (1 - R^2)\frac{n
     }
 </style>
 
-<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top" data-border="1">
 <thead>
 <tr class="header" style="text-align: right;">
 <th data-quarto-table-cell-role="th"></th>
@@ -885,12 +891,12 @@ R^2_{adj} = 1 - \frac{SS_E / (n - k - 1)}{SS_T / (n - 1)} = 1 - (1 - R^2)\frac{n
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">fit2</td>
+<th data-quarto-table-cell-role="th">fit2</th>
 <td>0.8078</td>
 <td>0.8062</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">fit_noise</td>
+<th data-quarto-table-cell-role="th">fit_noise</th>
 <td>0.8113</td>
 <td>0.8075</td>
 </tr>
@@ -961,7 +967,7 @@ Y = \beta_0 + \beta_1 x_{input} + \beta_2 x_{output} + \beta_3 D_{medium} + \bet
 <li>R יוצר את משתני הדמה בעצמו מכל <code>factor</code>. רמת הבסיס היא הרמה הראשונה (<code>levels</code>)</li>
 </ul>
 <div id="cell-dummies" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a aria-hidden="true" tabindex="-1"></a>pd.get_dummies(llm[[<span class="st">"model"</span>]], drop_first<span class="op">=</span><span class="va">True</span>).astype(<span class="bu">int</span>).assign(Intercept<span class="op">=</span><span class="dv">1</span>).iloc[:<span class="dv">3</span>][[<span class="st">"Intercept"</span>, <span class="st">"model_medium"</span>, <span class="st">"model_large"</span>]]</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a aria-hidden="true" tabindex="-1"></a>pd.get_dummies(llm[[<span class="st">"model"</span>]], drop_first<span class="op">=</span><span class="va">True</span>).astype(<span class="bu">int</span>).assign(Intercept<span class="op">=</span><span class="dv">1</span>).iloc[:<span class="dv">3</span>][[<span class="st">"Intercept"</span>, <span class="st">"model_medium"</span>, <span class="st">"model_large"</span>]]</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="dummies" class="cell-output cell-output-display" data-execution_count="15">
 <div>
 <style scoped="">
@@ -978,7 +984,7 @@ Y = \beta_0 + \beta_1 x_{input} + \beta_2 x_{output} + \beta_3 D_{medium} + \bet
     }
 </style>
 
-<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top" data-border="1">
 <thead>
 <tr class="header" style="text-align: right;">
 <th data-quarto-table-cell-role="th"></th>
@@ -989,19 +995,19 @@ Y = \beta_0 + \beta_1 x_{input} + \beta_2 x_{output} + \beta_3 D_{medium} + \bet
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
+<th data-quarto-table-cell-role="th">0</th>
 <td>1</td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<th data-quarto-table-cell-role="th">1</th>
 <td>1</td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<th data-quarto-table-cell-role="th">2</th>
 <td>1</td>
 <td>0</td>
 <td>1</td>
@@ -1016,12 +1022,12 @@ Y = \beta_0 + \beta_1 x_{input} + \beta_2 x_{output} + \beta_3 D_{medium} + \bet
 <section id="האם-מודל-השפה-הגדול-איטי-יותר" class="slide level2 smaller">
 <h2>האם מודל השפה הגדול איטי יותר?</h2>
 <div id="cell-confounding" class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a aria-hidden="true" tabindex="-1"></a>fit_raw <span class="op">=</span> smf.ols(<span class="st">"latency ~ model"</span>, data<span class="op">=</span>llm).fit()                             <span class="co"># model only</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a aria-hidden="true" tabindex="-1"></a>fit_raw <span class="op">=</span> smf.ols(<span class="st">"latency ~ model"</span>, data<span class="op">=</span>llm).fit()                             <span class="co"># model only</span></span>
 <span id="cb21-2"><a aria-hidden="true" tabindex="-1"></a>fit3 <span class="op">=</span> smf.ols(<span class="st">"latency ~ input_k + output_tokens + model"</span>, data<span class="op">=</span>llm).fit()      <span class="co"># same length of answer</span></span>
 <span id="cb21-3"><a aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb21-4"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"raw"</span>: fit_raw.params[[<span class="st">"model[T.medium]"</span>, <span class="st">"model[T.large]"</span>]].to_numpy(),</span>
 <span id="cb21-5"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"adjusted"</span>: fit3.params[[<span class="st">"model[T.medium]"</span>, <span class="st">"model[T.large]"</span>]].to_numpy(),</span>
-<span id="cb21-6"><a aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>[<span class="st">"modelmedium"</span>, <span class="st">"modellarge"</span>])</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-6"><a aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>[<span class="st">"modelmedium"</span>, <span class="st">"modellarge"</span>])</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="confounding" class="cell-output cell-output-display" data-execution_count="16">
 <div>
 <style scoped="">
@@ -1038,7 +1044,7 @@ Y = \beta_0 + \beta_1 x_{input} + \beta_2 x_{output} + \beta_3 D_{medium} + \bet
     }
 </style>
 
-<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top" data-border="1">
 <thead>
 <tr class="header" style="text-align: right;">
 <th data-quarto-table-cell-role="th"></th>
@@ -1048,12 +1054,12 @@ Y = \beta_0 + \beta_1 x_{input} + \beta_2 x_{output} + \beta_3 D_{medium} + \bet
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">modelmedium</td>
+<th data-quarto-table-cell-role="th">modelmedium</th>
 <td>3.8203</td>
 <td>1.5585</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">modellarge</td>
+<th data-quarto-table-cell-role="th">modellarge</th>
 <td>14.3363</td>
 <td>7.6691</td>
 </tr>
@@ -1079,7 +1085,7 @@ F = \frac{(SS_E^{R} - SS_E^{F}) / q}{SS_E^{F} / (n - k - 1)} \sim F_{q,\; n-k-1}
 \]</span></p>
 <p><span class="math inline">\(q\)</span> הוא מספר המקדמים שנבדקים, ו-<span class="math inline">\(k\)</span> הוא מספר המשתנים במודל <strong>המלא</strong>.</p>
 <div id="cell-partial-f" class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a aria-hidden="true" tabindex="-1"></a>sm.stats.anova_lm(fit2, fit3)</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a aria-hidden="true" tabindex="-1"></a>sm.stats.anova_lm(fit2, fit3)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="partial-f" class="cell-output cell-output-display" data-execution_count="17">
 <div>
 <style scoped="">
@@ -1096,7 +1102,7 @@ F = \frac{(SS_E^{R} - SS_E^{F}) / q}{SS_E^{F} / (n - k - 1)} \sim F_{q,\; n-k-1}
     }
 </style>
 
-<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top" data-border="1">
 <thead>
 <tr class="header" style="text-align: right;">
 <th data-quarto-table-cell-role="th"></th>
@@ -1110,7 +1116,7 @@ F = \frac{(SS_E^{R} - SS_E^{F}) / q}{SS_E^{F} / (n - k - 1)} \sim F_{q,\; n-k-1}
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
+<th data-quarto-table-cell-role="th">0</th>
 <td>247.0</td>
 <td>2656.3357</td>
 <td>0.0</td>
@@ -1119,7 +1125,7 @@ F = \frac{(SS_E^{R} - SS_E^{F}) / q}{SS_E^{F} / (n - k - 1)} \sim F_{q,\; n-k-1}
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<th data-quarto-table-cell-role="th">1</th>
 <td>245.0</td>
 <td>1024.5537</td>
 <td>2.0</td>
@@ -1158,7 +1164,7 @@ F = \frac{(2656 - 1025) / 2}{1025 / 245} = 195
 <h2>האם הקווים מקבילים?</h2>
 <p>ברגרסיה <code>fit3</code> לכל מודל שפה יש חותך משלו, אבל <strong>אותו שיפוע</strong>: אותו זמן לכל טוקן בתשובה. זה סביר?</p>
 <div id="cell-parallel-lines" class="cell" data-fig-height="4.2" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a aria-hidden="true" tabindex="-1"></a>aug3 <span class="op">=</span> llm.assign(fitted<span class="op">=</span>fit3.fittedvalues)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a aria-hidden="true" tabindex="-1"></a>aug3 <span class="op">=</span> llm.assign(fitted<span class="op">=</span>fit3.fittedvalues)</span>
 <span id="cb23-2"><a aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">4.2</span>))</span>
 <span id="cb23-3"><a aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> m, color <span class="kw">in</span> model_cols.items():</span>
 <span id="cb23-4"><a aria-hidden="true" tabindex="-1"></a>    sub <span class="op">=</span> aug3[aug3.model <span class="op">==</span> m]</span>
@@ -1169,7 +1175,7 @@ F = \frac{(2656 - 1025) / 2}{1025 / 245} = 195
 <span id="cb23-9"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"קווים מקבילים לא מתאימים לנתונים</span><span class="ch">\n</span><span class="st">הקווים: החיזוי של רגרסיה בלי אינטראקציה (בממוצע הקלט)"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb23-10"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Output tokens"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"Latency (s)"</span>)</span>
 <span id="cb23-11"><a aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb23-12"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb23-12"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
@@ -1211,8 +1217,8 @@ Y = \beta_0 + \beta_1 x_{in} + \beta_2 x_{out} + \beta_3 D_{med} + \beta_4 D_{lr
 </table>
 <p>ב-R, <code>output_tokens * model</code> הוא קיצור של <code>output_tokens + model + output_tokens:model</code>.</p>
 <div id="fit4" class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a aria-hidden="true" tabindex="-1"></a>fit4 <span class="op">=</span> smf.ols(<span class="st">"latency ~ input_k + output_tokens * model"</span>, data<span class="op">=</span>llm).fit()</span>
-<span id="cb24-2"><a aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(fit4.summary())</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a aria-hidden="true" tabindex="-1"></a>fit4 <span class="op">=</span> smf.ols(<span class="st">"latency ~ input_k + output_tokens * model"</span>, data<span class="op">=</span>llm).fit()</span>
+<span id="cb24-2"><a aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(fit4.summary())</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
@@ -1260,7 +1266,7 @@ strong multicollinearity or other numerical problems.</code></pre>
 <li><strong>כלל ההיררכיה:</strong> אם אינטראקציה נמצאת במודל, משאירים בו גם את המשתנים שמרכיבים אותה</li>
 </ul>
 <div id="cell-partial-f-interaction" class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a aria-hidden="true" tabindex="-1"></a>sm.stats.anova_lm(fit3, fit4)</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a aria-hidden="true" tabindex="-1"></a>sm.stats.anova_lm(fit3, fit4)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="partial-f-interaction" class="cell-output cell-output-display" data-execution_count="21">
 <div>
 <style scoped="">
@@ -1277,7 +1283,7 @@ strong multicollinearity or other numerical problems.</code></pre>
     }
 </style>
 
-<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top" data-border="1">
 <thead>
 <tr class="header" style="text-align: right;">
 <th data-quarto-table-cell-role="th"></th>
@@ -1291,7 +1297,7 @@ strong multicollinearity or other numerical problems.</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
+<th data-quarto-table-cell-role="th">0</th>
 <td>245.0</td>
 <td>1024.5537</td>
 <td>0.0</td>
@@ -1300,7 +1306,7 @@ strong multicollinearity or other numerical problems.</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<th data-quarto-table-cell-role="th">1</th>
 <td>243.0</td>
 <td>256.5350</td>
 <td>2.0</td>
@@ -1323,7 +1329,7 @@ strong multicollinearity or other numerical problems.</code></pre>
 <section id="שאריות-מול-ערכים-חזויים" class="slide level2">
 <h2>שאריות מול ערכים חזויים</h2>
 <div id="cell-resid-plot" class="cell" data-fig-height="4.2" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="fl">4.2</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="fl">4.2</span>))</span>
 <span id="cb27-2"><a aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, fit, title <span class="kw">in</span> [(axes[<span class="dv">0</span>], fit3, <span class="st">"בלי אינטראקציה (fit3)"</span>), (axes[<span class="dv">1</span>], fit4, <span class="st">"עם אינטראקציה (fit4)"</span>)]:</span>
 <span id="cb27-3"><a aria-hidden="true" tabindex="-1"></a>    ax.axhline(<span class="dv">0</span>, color<span class="op">=</span>nanas_pal[<span class="st">"grey"</span>])</span>
 <span id="cb27-4"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> m, color <span class="kw">in</span> model_cols.items():</span>
@@ -1334,7 +1340,7 @@ strong multicollinearity or other numerical problems.</code></pre>
 <span id="cb27-9"><a aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"Residual (s)"</span>)</span>
 <span id="cb27-10"><a aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].legend()</span>
 <span id="cb27-11"><a aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"השאריות חושפות את מה שהרגרסיה פספסה</span><span class="ch">\n</span><span class="st">משמאל: דפוס ברור לפי גודל מודל השפה · מימין: ענן אקראי סביב אפס"</span>)</span>
-<span id="cb27-12"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-12"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section>
@@ -1398,12 +1404,12 @@ strong multicollinearity or other numerical problems.</code></pre>
 <section id="שאריות-מול-התפלגות-נורמלית" class="slide level2">
 <h2>שאריות מול התפלגות נורמלית</h2>
 <div id="cell-qq-plot" class="cell" data-fig-height="3.6" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a aria-hidden="true" tabindex="-1"></a>std_resid <span class="op">=</span> fit4.get_influence().resid_studentized_internal</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a aria-hidden="true" tabindex="-1"></a>std_resid <span class="op">=</span> fit4.get_influence().resid_studentized_internal</span>
 <span id="cb28-2"><a aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">3.6</span>))</span>
 <span id="cb28-3"><a aria-hidden="true" tabindex="-1"></a>sm.qqplot(std_resid, line<span class="op">=</span><span class="st">"45"</span>, ax<span class="op">=</span>ax, color<span class="op">=</span>nanas_pal[<span class="st">"primary"</span>])</span>
 <span id="cb28-4"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"השאריות קרובות לנורמליות</span><span class="ch">\n</span><span class="st">שאריות מתוקננות של fit4 מול הכמויות של N(0,1)"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb28-5"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Theoretical quantile"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"Standardised residual"</span>)</span>
-<span id="cb28-6"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb28-6"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 
 </div>
 <img data-src="03-multiple-regression_files/figure-html/qq-plot-output-1.png" id="qq-plot" class="r-stretch"></section>
@@ -1414,8 +1420,8 @@ strong multicollinearity or other numerical problems.</code></pre>
 H_0: \text{השאריות המתוקננות מתפלגות } N(0, 1) \qquad D = \max_x \left| F_n(x) - \Phi(x) \right|
 \]</span></p>
 <div id="ks-resid" class="cell" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a aria-hidden="true" tabindex="-1"></a>ks_resid <span class="op">=</span> stats.kstest(std_resid, <span class="st">"norm"</span>)</span>
-<span id="cb29-2"><a aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"D = </span><span class="sc">{</span>ks_resid<span class="sc">.</span>statistic<span class="sc">:.6g}</span><span class="ss">, p-value = </span><span class="sc">{</span>ks_resid<span class="sc">.</span>pvalue<span class="sc">:.6g}</span><span class="ss">"</span>)</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a aria-hidden="true" tabindex="-1"></a>ks_resid <span class="op">=</span> stats.kstest(std_resid, <span class="st">"norm"</span>)</span>
+<span id="cb29-2"><a aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"D = </span><span class="sc">{</span>ks_resid<span class="sc">.</span>statistic<span class="sc">:.6g}</span><span class="ss">, p-value = </span><span class="sc">{</span>ks_resid<span class="sc">.</span>pvalue<span class="sc">:.6g}</span><span class="ss">"</span>)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>D = 0.0284173, p-value = 0.984258</code></pre>
 </div>
@@ -1430,11 +1436,11 @@ H_0: \text{השאריות המתוקננות מתפלגות } N(0, 1) \qquad D =
 <h2>מולטיקולינאריות (<span class="en">Multicollinearity</span>)</h2>
 <p>מספר המסמכים מ-RAG קובע כמעט לגמרי את מספר הטוקנים בקלט: המתאם ביניהם הוא np.float64(0.96). מה קורה כשמכניסים את שניהם?</p>
 <div id="cell-collinearity" class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a aria-hidden="true" tabindex="-1"></a>fit5 <span class="op">=</span> smf.ols(<span class="st">"latency ~ input_k + rag_docs + output_tokens * model"</span>, data<span class="op">=</span>llm).fit()</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a aria-hidden="true" tabindex="-1"></a>fit5 <span class="op">=</span> smf.ols(<span class="st">"latency ~ input_k + rag_docs + output_tokens * model"</span>, data<span class="op">=</span>llm).fit()</span>
 <span id="cb31-2"><a aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb31-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"fit4"</span>: [fit4.params[<span class="st">"input_k"</span>], fit4.bse[<span class="st">"input_k"</span>]],</span>
 <span id="cb31-4"><a aria-hidden="true" tabindex="-1"></a>    <span class="st">"fit5"</span>: [fit5.params[<span class="st">"input_k"</span>], fit5.bse[<span class="st">"input_k"</span>]],</span>
-<span id="cb31-5"><a aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>[<span class="st">"Estimate"</span>, <span class="st">"Std. Error"</span>]).T</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb31-5"><a aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>[<span class="st">"Estimate"</span>, <span class="st">"Std. Error"</span>]).T</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="collinearity" class="cell-output cell-output-display" data-execution_count="25">
 <div>
 <style scoped="">
@@ -1451,7 +1457,7 @@ H_0: \text{השאריות המתוקננות מתפלגות } N(0, 1) \qquad D =
     }
 </style>
 
-<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top" data-border="1">
 <thead>
 <tr class="header" style="text-align: right;">
 <th data-quarto-table-cell-role="th"></th>
@@ -1461,12 +1467,12 @@ H_0: \text{השאריות המתוקננות מתפלגות } N(0, 1) \qquad D =
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">fit4</td>
+<th data-quarto-table-cell-role="th">fit4</th>
 <td>0.2404</td>
 <td>0.0663</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">fit5</td>
+<th data-quarto-table-cell-role="th">fit5</th>
 <td>0.0667</td>
 <td>0.2504</td>
 </tr>
@@ -1485,8 +1491,8 @@ H_0: \text{השאריות המתוקננות מתפלגות } N(0, 1) \qquad D =
 VIF_j = \frac{1}{1 - R_j^2}
 \]</span></p>
 <div id="cell-vif" class="cell" data-execution_count="26">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a aria-hidden="true" tabindex="-1"></a>r2_input <span class="op">=</span> smf.ols(<span class="st">"input_k ~ rag_docs + output_tokens * model"</span>, data<span class="op">=</span>llm).fit().rsquared</span>
-<span id="cb32-2"><a aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> r2_input)    <span class="co"># VIF of input_k. Rule of thumb: above 5-10 is a problem</span></span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a aria-hidden="true" tabindex="-1"></a>r2_input <span class="op">=</span> smf.ols(<span class="st">"input_k ~ rag_docs + output_tokens * model"</span>, data<span class="op">=</span>llm).fit().rsquared</span>
+<span id="cb32-2"><a aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> r2_input)    <span class="co"># VIF of input_k. Rule of thumb: above 5-10 is a problem</span></span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="vif" class="cell-output cell-output-display" data-execution_count="26">
 <pre><code>np.float64(14.256956489455758)</code></pre>
 </div>
@@ -1506,7 +1512,7 @@ VIF_j = \frac{1}{1 - R_j^2}
 </ul>
 <p><strong>קריטריונים נפוצים:</strong> <span class="math inline">\(R^2_{adj}\)</span>, ה-p-value של מבחן F חלקי, או <span class="en">AIC</span> (מדד שמאזן בין טיב ההתאמה למספר הפרמטרים. קטן יותר = טוב יותר)</p>
 <div id="cell-step" class="cell" data-execution_count="27">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># statsmodels has no built-in step(); a small bidirectional-by-AIC search, like R's step().</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># statsmodels has no built-in step(); a small bidirectional-by-AIC search, like R's step().</span></span>
 <span id="cb34-2"><a aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> stepwise_aic(data, response, all_terms, start_terms):</span>
 <span id="cb34-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fit_of(terms):</span>
 <span id="cb34-4"><a aria-hidden="true" tabindex="-1"></a>        rhs <span class="op">=</span> <span class="st">" + "</span>.join(terms) <span class="cf">if</span> terms <span class="cf">else</span> <span class="st">"1"</span></span>
@@ -1535,7 +1541,7 @@ VIF_j = \frac{1}{1 - R_j^2}
 <span id="cb34-27"><a aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-28"><a aria-hidden="true" tabindex="-1"></a>all_terms <span class="op">=</span> [<span class="st">"input_k"</span>, <span class="st">"rag_docs"</span>, <span class="st">"hour"</span>, <span class="st">"output_tokens"</span>, <span class="st">"C(model)"</span>, <span class="st">"output_tokens:C(model)"</span>]</span>
 <span id="cb34-29"><a aria-hidden="true" tabindex="-1"></a>fit_step, step_terms <span class="op">=</span> stepwise_aic(llm, <span class="st">"latency"</span>, all_terms, all_terms)</span>
-<span id="cb34-30"><a aria-hidden="true" tabindex="-1"></a><span class="co">"latency ~ "</span> <span class="op">+</span> <span class="st">" + "</span>.join(step_terms)</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb34-30"><a aria-hidden="true" tabindex="-1"></a><span class="co">"latency ~ "</span> <span class="op">+</span> <span class="st">" + "</span>.join(step_terms)</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="step" class="cell-output cell-output-display" data-execution_count="27">
 <pre><code>'latency ~ rag_docs + output_tokens + output_tokens:C(model)'</code></pre>
 </div>
@@ -1544,7 +1550,7 @@ VIF_j = \frac{1}{1 - R_j^2}
 <section id="מה-יכול-להשתבש-בבחירה-אוטומטית" class="slide level2 smaller">
 <h2>מה יכול להשתבש בבחירה אוטומטית</h2>
 <div id="cell-step-hour" class="cell" data-execution_count="28">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a aria-hidden="true" tabindex="-1"></a>fit_step.summary().tables[<span class="dv">1</span>].data  <span class="co"># includes `hour`'s row if the search kept it</span></span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a aria-hidden="true" tabindex="-1"></a>fit_step.summary().tables[<span class="dv">1</span>].data  <span class="co"># includes `hour`'s row if the search kept it</span></span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="step-hour" class="cell-output cell-output-display" data-execution_count="28">
 <pre><code>[['', 'coef', 'std err', 't', 'P&gt;|t|', '[0.025', '0.975]'],
  ['Intercept',
@@ -1615,13 +1621,13 @@ VIF_j = \frac{1}{1 - R_j^2}
 <h2>חזרה לשאלה: כמה זמן תיקח הקריאה?</h2>
 <p>2,000 טוקנים בקלט, 500 בפלט, מודל השפה הגדול:</p>
 <div id="cell-predict" class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a aria-hidden="true" tabindex="-1"></a>new_call <span class="op">=</span> pd.DataFrame({<span class="st">"input_k"</span>: [<span class="dv">2</span>], <span class="st">"output_tokens"</span>: [<span class="dv">500</span>],</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a aria-hidden="true" tabindex="-1"></a>new_call <span class="op">=</span> pd.DataFrame({<span class="st">"input_k"</span>: [<span class="dv">2</span>], <span class="st">"output_tokens"</span>: [<span class="dv">500</span>],</span>
 <span id="cb38-2"><a aria-hidden="true" tabindex="-1"></a>                          <span class="st">"model"</span>: pd.Categorical([<span class="st">"large"</span>], categories<span class="op">=</span>[<span class="st">"small"</span>, <span class="st">"medium"</span>, <span class="st">"large"</span>])})</span>
 <span id="cb38-3"><a aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> fit4.get_prediction(new_call)</span>
 <span id="cb38-4"><a aria-hidden="true" tabindex="-1"></a>conf <span class="op">=</span> pred.conf_int(alpha<span class="op">=</span><span class="fl">0.05</span>)[<span class="dv">0</span>]       <span class="co"># CI for the mean</span></span>
 <span id="cb38-5"><a aria-hidden="true" tabindex="-1"></a>pi <span class="op">=</span> pred.conf_int(alpha<span class="op">=</span><span class="fl">0.05</span>, obs<span class="op">=</span><span class="va">True</span>)[<span class="dv">0</span>]  <span class="co"># PI for a single new observation</span></span>
 <span id="cb38-6"><a aria-hidden="true" tabindex="-1"></a>pd.DataFrame({<span class="st">"fit"</span>: [pred.predicted_mean[<span class="dv">0</span>]] <span class="op">*</span> <span class="dv">2</span>, <span class="st">"lwr"</span>: [conf[<span class="dv">0</span>], pi[<span class="dv">0</span>]], <span class="st">"upr"</span>: [conf[<span class="dv">1</span>], pi[<span class="dv">1</span>]]},</span>
-<span id="cb38-7"><a aria-hidden="true" tabindex="-1"></a>             index<span class="op">=</span>[<span class="st">"confidence"</span>, <span class="st">"prediction"</span>])</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb38-7"><a aria-hidden="true" tabindex="-1"></a>             index<span class="op">=</span>[<span class="st">"confidence"</span>, <span class="st">"prediction"</span>])</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="predict" class="cell-output cell-output-display" data-execution_count="29">
 <div>
 <style scoped="">
@@ -1638,7 +1644,7 @@ VIF_j = \frac{1}{1 - R_j^2}
     }
 </style>
 
-<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top" data-border="1">
 <thead>
 <tr class="header" style="text-align: right;">
 <th data-quarto-table-cell-role="th"></th>
@@ -1649,13 +1655,13 @@ VIF_j = \frac{1}{1 - R_j^2}
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">confidence</td>
+<th data-quarto-table-cell-role="th">confidence</th>
 <td>16.2605</td>
 <td>15.9566</td>
 <td>16.5644</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">prediction</td>
+<th data-quarto-table-cell-role="th">prediction</th>
 <td>16.2605</td>
 <td>14.2139</td>
 <td>18.3070</td>
@@ -1674,7 +1680,7 @@ VIF_j = \frac{1}{1 - R_j^2}
 <section id="איך-זה-נראה" class="slide level2">
 <h2>איך זה נראה</h2>
 <div id="cell-ci-pi-plot" class="cell" data-fig-height="4.2" data-execution_count="31">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a aria-hidden="true" tabindex="-1"></a>grid_cpu <span class="op">=</span> pd.DataFrame({<span class="st">"load"</span>: np.arange(<span class="dv">8</span>, <span class="fl">19.01</span>, <span class="fl">0.1</span>)})</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a aria-hidden="true" tabindex="-1"></a>grid_cpu <span class="op">=</span> pd.DataFrame({<span class="st">"load"</span>: np.arange(<span class="dv">8</span>, <span class="fl">19.01</span>, <span class="fl">0.1</span>)})</span>
 <span id="cb39-2"><a aria-hidden="true" tabindex="-1"></a>pred_cpu <span class="op">=</span> fit_cpu.get_prediction(grid_cpu)</span>
 <span id="cb39-3"><a aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> pred_cpu.conf_int(alpha<span class="op">=</span><span class="fl">0.05</span>)</span>
 <span id="cb39-4"><a aria-hidden="true" tabindex="-1"></a>pi <span class="op">=</span> pred_cpu.conf_int(alpha<span class="op">=</span><span class="fl">0.05</span>, obs<span class="op">=</span><span class="va">True</span>)</span>
@@ -1686,7 +1692,7 @@ VIF_j = \frac{1}{1 - R_j^2}
 <span id="cb39-10"><a aria-hidden="true" tabindex="-1"></a>ax.scatter(cpu.load, cpu.util, s<span class="op">=</span><span class="dv">25</span>)</span>
 <span id="cb39-11"><a aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"רווח החיזוי רחב יותר מרווח הסמך, ושניהם מתרחבים בקצוות</span><span class="ch">\n</span><span class="st">דוגמת המעבד · כהה: רווח סמך 95% לתוחלת · בהיר: רווח חיזוי 95% לתצפית בודדת"</span>, loc<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb39-12"><a aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Load (k requests / min)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"CPU utilisation (%)"</span>)</span>
-<span id="cb39-13"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb39-13"><a aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="העתק ללוח" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 </section><section id="איך-זה-נראה-output" class="slide level2 output-location-slide"><h2>איך זה נראה</h2><div class="cell output-location-slide" data-fig-height="4.2" data-execution_count="31">
@@ -1972,7 +1978,7 @@ VIF_j = \frac{1}{1 - R_j^2}
         margin: 0.1,
 
         math: {
-          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
           config: 'TeX-AMS_HTML-full',
           tex2jax: {
             inlineMath: [['\\(','\\)']],
@@ -2046,13 +2052,14 @@ VIF_j = \frac{1}{1 - R_j^2}
           e.clearSelection();
         }
         const getTextToCopy = function(trigger) {
-            const codeEl = trigger.previousElementSibling.cloneNode(true);
-            for (const childEl of codeEl.children) {
-              if (isCodeAnnotation(childEl)) {
-                childEl.remove();
-              }
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
             }
-            return codeEl.innerText;
+          }
+          return codeEl.innerText;
         }
         const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
           text: getTextToCopy
